@@ -41,18 +41,26 @@ with col1:
     st.image("https://avatars.githubusercontent.com/u/yandri918", width=250, caption="Data-Driven Marketer")  # Placeholder or GitHub avatar if available
     
 with col2:
-    st.markdown("<h1 class='main-header'>Hi, I'm Yandri</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 class='sub-header'>Marketing Analyst | Growth Engineer | Data Scientist</h3>", unsafe_allow_html=True)
-    st.write("""
-    I bridge the gap between **Marketing Strategy**, **Economics**, and **Data Science**. 
-    I build tools that automate insights, predict market trends, and optimize conversion analytics using Python & Streamlit.
-    """)
-    
-    # Social Links
     st.markdown("""
-    [<img src='https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white' width=100>](https://github.com/yandri918)
-    &nbsp;&nbsp;
-    [<img src='https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white' width=100>](https://linkedin.com/in/yandri-s)
+    <h1 style='text-align: left; color: #2C3E50; margin-bottom: 0px;'>Hi, I'm Yandri 👋</h1>
+    <h3 style='text-align: left; color: #7F8C8D; margin-top: 5px;'>Marketing Analyst | Growth Engineer | Data Scientist</h3>
+    <hr style='border: 1px solid #ddd; width: 50%; margin-left: 0;'>
+    <p style='font-size: 18px; line-height: 1.6; color: #34495E;'>
+    I bridge the gap between <b>Marketing Strategy</b>, <b>Economics</b>, and <b>Data Science</b>. <br>
+    I build tools that <span style='background-color: #e8f5e9; padding: 2px 5px; border-radius: 4px; color: #27ae60;'>automate insights</span>, 
+    <span style='background-color: #e3f2fd; padding: 2px 5px; border-radius: 4px; color: #2980b9;'>predict market trends</span>, and 
+    <span style='background-color: #fff3e0; padding: 2px 5px; border-radius: 4px; color: #e67e22;'>optimize conversion analytics</span> 
+    using <b>Python & Streamlit</b>.
+    </p>
+    """, unsafe_allow_html=True)
+    
+    # Social Links with better spacing
+    st.markdown("""
+    <div style='display: flex; gap: 10px; margin-top: 20px;'>
+        <a href='https://github.com/yandri918'><img src='https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white'></a>
+        <a href='https://linkedin.com/in/yandri-s'><img src='https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white'></a>
+        <a href='mailto:yandri@example.com'><img src='https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white'></a>
+    </div>
     """, unsafe_allow_html=True)
 
 st.divider()
