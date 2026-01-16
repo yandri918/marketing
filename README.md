@@ -23,6 +23,7 @@ This portfolio demonstrates my ability to bridge the gap between **Marketing Str
 ### 2. 🤖 Artificial Intelligence
 - **Sentiment Analysis**: NLP-powered real-time brand monitoring from social media text.
 - **A/B Testing Simulator**: Statistical significance calculator for campaign optimization.
+- **Recommendation Engine**: **Collaborative Filtering** system to suggest products based on user purchase history similarity.
 
 ### 3. 🔮 Predictive Modeling (Pro)
 - **CLV Prediction**: Probabilistic models (**BG/NBD** & **Gamma-Gamma**) to estimate future customer value and churn probability.
