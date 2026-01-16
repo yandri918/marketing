@@ -106,7 +106,7 @@ with c1:
 
 with c2:
     st.write("**Average Metrics per Cluster:**")
-    st.dataframe(cluster_metrics.style.format("{:.1f}"))
+    st.dataframe(cluster_metrics.set_index('Cluster').style.format("{:.1f}"))
     
     st.markdown("---")
     st.write("**Marketing Recommendations:**")
