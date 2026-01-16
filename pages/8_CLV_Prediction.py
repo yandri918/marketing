@@ -30,8 +30,11 @@ def generate_rfm_summary(n_customers=2000):
     }
     df = pd.DataFrame(data)
     # Filter logical constraints
+    # Filter logical constraints & Ensure valid BG/NBD input
     df = df[df['frequency'] > 0]
     df['recency'] = df.apply(lambda row: min(row['recency'], row['T']), axis=1) # Recency cannot be > Age
+    df = df[df['recency'] > 0] # Recency must be > 0 for valid fit
+    df = df[df['T'] > df['recency']] # Ideally T >= Recency, dropping equal cases to avoid edge errors
     return df
 
 df = generate_rfm_summary()
@@ -45,7 +48,7 @@ st.divider()
 st.subheader("1. BG/NBD Model: Churn & Future Transactions")
 st.write("We fit the **Beta-Geometric/Negative Binomial Distribution (BG/NBD)** model to the data.")
 
-bgf = BetaGeoFitter(penalizer_coef=0.0)
+bgf = BetaGeoFitter(penalizer_coef=0.01)
 bgf.fit(df['frequency'], df['recency'], df['T'])
 
 col1, col2 = st.columns(2)
