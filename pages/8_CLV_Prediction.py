@@ -35,9 +35,11 @@ def generate_rfm_summary(n_customers=2000):
     df['recency'] = df.apply(lambda row: min(row['recency'], row['T']), axis=1) # Recency cannot be > Age
     df = df[df['recency'] > 0] # Recency must be > 0 for valid fit
     df = df[df['T'] > df['recency']] # Ideally T >= Recency, dropping equal cases to avoid edge errors
+    
+    # Add CustomerID
+    df['CustomerID'] = [f'C{i:03d}' for i in range(1, len(df) + 1)]
     return df
 
-    return df
 
 # Initialize Session State
 if 'clv_data' not in st.session_state:
@@ -58,6 +60,7 @@ with st.sidebar.expander("➕ Add Single Customer Data"):
                 st.error("Error: Recency cannot be greater than Customer Age (T).")
             else:
                 new_row = pd.DataFrame({
+                    'CustomerID': [f"Manual_{len(st.session_state.clv_data) + 1}"],
                     'frequency': [new_freq],
                     'recency': [new_recency], 
                     'T': [new_T],
@@ -65,7 +68,7 @@ with st.sidebar.expander("➕ Add Single Customer Data"):
                 })
                 # Add to session state
                 st.session_state.clv_data = pd.concat([st.session_state.clv_data, new_row], ignore_index=True)
-                st.success("Customer added! Model re-running...")
+                st.success(f"Customer 'Manual_{len(st.session_state.clv_data) + 1}' added! Check the Top Customers table.")
                 st.rerun()
 
 df = st.session_state.clv_data
