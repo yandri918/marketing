@@ -37,7 +37,38 @@ def generate_rfm_summary(n_customers=2000):
     df = df[df['T'] > df['recency']] # Ideally T >= Recency, dropping equal cases to avoid edge errors
     return df
 
-df = generate_rfm_summary()
+    return df
+
+# Initialize Session State
+if 'clv_data' not in st.session_state:
+    st.session_state.clv_data = generate_rfm_summary()
+
+# Manual Input Form
+with st.sidebar.expander("➕ Add Single Customer Data"):
+    with st.form("clv_input_form"):
+        new_freq = st.number_input("Frequency (transactions)", min_value=1, value=5)
+        new_recency = st.number_input("Recency (days)", min_value=1, value=30)
+        new_T = st.number_input("Customer Age T (days)", min_value=1, value=100)
+        new_monetary = st.number_input("Avg Monetary Value (Rp)", min_value=0, value=1000000, step=50000)
+        
+        submitted = st.form_submit_button("Add to Model")
+        
+        if submitted:
+            if new_recency > new_T:
+                st.error("Error: Recency cannot be greater than Customer Age (T).")
+            else:
+                new_row = pd.DataFrame({
+                    'frequency': [new_freq],
+                    'recency': [new_recency], 
+                    'T': [new_T],
+                    'monetary_value': [new_monetary]
+                })
+                # Add to session state
+                st.session_state.clv_data = pd.concat([st.session_state.clv_data, new_row], ignore_index=True)
+                st.success("Customer added! Model re-running...")
+                st.rerun()
+
+df = st.session_state.clv_data
 
 with st.expander("Show Sample Data (RFM Summary)"):
     st.dataframe(df.head())
