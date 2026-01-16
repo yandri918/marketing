@@ -16,9 +16,9 @@ with col1:
     st.header("📱 Digital Marketing")
     st.info("Scalable, but often lower engagement/activation.")
     
-    dig_ad_spend = st.number_input("Ad Spend ($)", value=5000, step=100)
-    dig_creative = st.number_input("Creative & Content Costs ($)", value=1000, step=100)
-    dig_tools = st.number_input("Software/Tools Cost ($)", value=500, step=50)
+    dig_ad_spend = st.number_input("Ad Spend (Rp)", value=50000000, step=1000000)
+    dig_creative = st.number_input("Creative & Content Costs (Rp)", value=10000000, step=500000)
+    dig_tools = st.number_input("Software/Tools Cost (Rp)", value=2000000, step=100000)
     
     dig_leads = st.number_input("Digital Leads Generated", value=2000, step=100)
     dig_conversion_rate = st.slider("Digital Conversion Rate (%)", 0.0, 20.0, 5.0, step=0.1)
@@ -32,9 +32,9 @@ with col2:
     st.info("High trust, relationship-based, higher activation.")
     
     field_officers = st.number_input("Number of Field Officers", value=5, step=1)
-    field_salary = st.number_input("Monthly Salary per Officer ($)", value=800, step=50)
-    field_transport = st.number_input("Transport & Logistics per Officer ($)", value=200, step=20)
-    field_commission = st.number_input("Commission per Store Acquired ($)", value=20, step=5)
+    field_salary = st.number_input("Monthly Salary per Officer (Rp)", value=5000000, step=500000)
+    field_transport = st.number_input("Transport & Logistics per Officer (Rp)", value=1500000, step=100000)
+    field_commission = st.number_input("Commission per Store Acquired (Rp)", value=100000, step=10000)
     
     field_stores_per_officer = st.number_input("Avg Stores Acquired per Officer/Month", value=30, step=1)
     
@@ -55,8 +55,8 @@ m1, m2, m3, m4 = st.columns(4)
 # CAC Winner
 cac_delta = field_cac - dig_cac
 winner_cac = "Digital" if dig_cac < field_cac else "Field"
-m1.metric("Digital CAC", f"${dig_cac:.2f}")
-m2.metric("Field CAC", f"${field_cac:.2f}", delta=f"${-cac_delta:.2f}" if winner_cac=="Digital" else f"${cac_delta:.2f}", delta_color="inverse")
+m1.metric("Digital CAC", f"Rp {dig_cac:,.0f}")
+m2.metric("Field CAC", f"Rp {field_cac:,.0f}", delta=f"Rp {-cac_delta:,.0f}" if winner_cac=="Digital" else f"Rp {cac_delta:,.0f}", delta_color="inverse")
 
 # Volume Winner
 vol_delta = field_total_stores - dig_stores
@@ -90,7 +90,7 @@ with c2:
         color=['Digital', 'Field Officer'],
         color_discrete_map={'Digital': '#3498db', 'Field Officer': '#2ecc71'},
         title="Cost Per Acquisition (Lower is Better)",
-        labels={'y': 'CAC ($)', 'x': 'Channel'}
+        labels={'y': 'CAC (Rp)', 'x': 'Channel'}
     )
     st.plotly_chart(fig_cac, use_container_width=True)
 
@@ -112,14 +112,14 @@ real_dig_cac = dig_total_cost / real_dig_stores if real_dig_stores > 0 else 0
 real_field_cac = field_total_cost / real_field_stores if real_field_stores > 0 else 0
 
 k1, k2, k3 = st.columns(3)
-k1.metric("Effective Digital CAC", f"${real_dig_cac:.2f}", delta=f"{real_dig_cac - dig_cac:.2f} impact")
-k2.metric("Effective Field CAC", f"${real_field_cac:.2f}", delta=f"{real_field_cac - field_cac:.2f} impact")
+k1.metric("Effective Digital CAC", f"Rp {real_dig_cac:,.0f}", delta=f"Rp {real_dig_cac - dig_cac:,.0f} impact")
+k2.metric("Effective Field CAC", f"Rp {real_field_cac:,.0f}", delta=f"Rp {real_field_cac - field_cac:,.0f} impact")
 
 cost_gap = real_field_cac - real_dig_cac
 if cost_gap < 0:
-    st.success(f"🏆 **Field Officer is actually {abs(cost_gap):.2f} cheaper** per *Active* Store!")
+    st.success(f"🏆 **Field Officer is actually Rp {abs(cost_gap):,.0f} cheaper** per *Active* Store!")
 else:
-    st.info(f"🏆 **Digital is still {cost_gap:.2f} cheaper** per *Active* Store.")
+    st.info(f"🏆 **Digital is still Rp {cost_gap:,.0f} cheaper** per *Active* Store.")
 
 # Hybrid Recommendation
 st.subheader("💡 Strategic Recommendation")

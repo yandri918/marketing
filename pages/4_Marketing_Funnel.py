@@ -85,7 +85,7 @@ st.markdown("Calculate the profitability of your advertising campaigns.")
 col_input1, col_input2, col_input3, col_input4 = st.columns(4)
 
 with col_input1:
-    ad_spend = st.number_input("Total Ad Spend ($)", value=5000, step=100)
+    ad_spend = st.number_input("Total Ad Spend (Rp)", value=50000000, step=1000000)
 with col_input2:
     impressions = st.number_input("Impressions", value=150000, step=1000)
 with col_input3:
@@ -101,7 +101,7 @@ cpa = ad_spend / conversions if conversions > 0 else 0
 conversion_rate = (conversions / clicks) * 100 if clicks > 0 else 0
 
 # Revenue Calculation
-avg_order_value = st.number_input("Average Order Value (AOV) $", value=150, step=10)
+avg_order_value = st.number_input("Average Order Value (AOV) Rp", value=1500000, step=50000)
 total_revenue = conversions * avg_order_value
 roas = total_revenue / ad_spend if ad_spend > 0 else 0
 profit = total_revenue - ad_spend
@@ -109,17 +109,17 @@ profit = total_revenue - ad_spend
 # Display Metrics
 st.subheader("📊 Campaign KPIs")
 m1, m2, m3, m4 = st.columns(4)
-m1.metric("CPM (Cost/1k Views)", f"${cpm:.2f}")
+m1.metric("CPM (Cost/1k Views)", f"Rp {cpm:,.0f}")
 m2.metric("CTR (Click-Through)", f"{ctr:.2f}%")
-m3.metric("CPC (Cost/Click)", f"${cpc:.2f}")
-m4.metric("CPA (Cost/Acquisition)", f"${cpa:.2f}")
+m3.metric("CPC (Cost/Click)", f"Rp {cpc:,.0f}")
+m4.metric("CPA (Cost/Acquisition)", f"Rp {cpa:,.0f}")
 
 st.divider()
 
 k1, k2, k3 = st.columns(3)
-k1.metric("Total Revenue", f"${total_revenue:,.2f}")
+k1.metric("Total Revenue", f"Rp {total_revenue:,.0f}")
 k2.metric("ROAS (Return on Ad Spend)", f"{roas:.2f}x", delta="Positive" if roas > 4 else "Low")
-k3.metric("Net Profit (Ads Only)", f"${profit:,.2f}", delta_color="normal")
+k3.metric("Net Profit (Ads Only)", f"Rp {profit:,.0f}", delta_color="normal")
 
 # Dynamic Scenario
 with st.expander("⚖️ Budget Scalability Calculator"):
@@ -132,6 +132,6 @@ with st.expander("⚖️ Budget Scalability Calculator"):
     projected_profit = projected_revenue - projected_spend
     
     sc1, sc2, sc3 = st.columns(3)
-    sc1.metric("Projected Spend", f"${projected_spend:,.0f}")
-    sc2.metric("Projected Revenue", f"${projected_revenue:,.0f}")
-    sc3.metric("Projected Profit", f"${projected_profit:,.0f}", delta=f"{projected_profit - profit:,.0f}")
+    sc1.metric("Projected Spend", f"Rp {projected_spend:,.0f}")
+    sc2.metric("Projected Revenue", f"Rp {projected_revenue:,.0f}")
+    sc3.metric("Projected Profit", f"Rp {projected_profit:,.0f}", delta=f"Rp {projected_profit - profit:,.0f}")

@@ -11,7 +11,7 @@ st.markdown("Analyze pricing strategies and market dynamics using **Economic Mod
 
 # Pricing Simulation
 st.sidebar.header("Price Elasticity Model")
-base_price = st.sidebar.number_input("Base Product Price ($)", 50, 500, 100)
+base_price = st.sidebar.number_input("Base Product Price (Rp)", 50000, 500000, 150000, step=5000)
 elasticity = st.sidebar.slider("Price Elasticity of Demand (PED)", -3.0, -0.1, -1.5, step=0.1)
 
 st.sidebar.info("**Note:** Elasticity < -1 means demand is sensitive to price (elastic). Elasticity > -1 means demand is less sensitive (inelastic).")
@@ -45,7 +45,7 @@ with col2:
     max_rev_row = df_econ.loc[df_econ['Revenue'].idxmax()]
     fig_rev.add_scatter(x=[max_rev_row['Price']], y=[max_rev_row['Revenue']], mode='markers+text', 
                         marker=dict(size=12, color='green'), name='Optimal Price',
-                        text=[f"Optimal: ${max_rev_row['Price']:.2f}"], textposition="top center")
+                        text=[f"Optimal: Rp {max_rev_row['Price']:,.0f}"], textposition="top center")
     
     st.plotly_chart(fig_rev, use_container_width=True)
 
@@ -92,10 +92,10 @@ ue_col1, ue_col2 = st.columns(2)
 
 with ue_col1:
     st.subheader("💰 Cost Structure")
-    price_per_unit = st.number_input("Selling Price per Unit ($)", value=base_price, step=5.0)
-    cogs = st.number_input("COGS (Material + Labor)", value=40.0, step=1.0)
-    shipping = st.number_input("Shipping/Fulfillment", value=5.0, step=0.5)
-    marketing_cost = st.number_input("CAC (Marketing per Unit)", value=15.0, step=1.0)
+    price_per_unit = st.number_input("Selling Price per Unit (Rp)", value=base_price, step=5000.0)
+    cogs = st.number_input("COGS (Material + Labor) Rp", value=60000.0, step=1000.0)
+    shipping = st.number_input("Shipping/Fulfillment (Rp)", value=15000.0, step=1000.0)
+    marketing_cost = st.number_input("CAC (Marketing per Unit) Rp", value=25000.0, step=1000.0)
     
     variable_cost = cogs + shipping + marketing_cost
     contribution_margin = price_per_unit - variable_cost
@@ -103,9 +103,9 @@ with ue_col1:
 
 with ue_col2:
     st.subheader("🏢 Fixed Costs (Monthly)")
-    rent = st.number_input("Rent & Utilities", value=2000, step=100)
-    salaries = st.number_input("Salaries & Overhead", value=8000, step=500)
-    software = st.number_input("Software & Tools", value=500, step=50)
+    rent = st.number_input("Rent & Utilities (Rp)", value=20000000, step=1000000)
+    salaries = st.number_input("Salaries & Overhead (Rp)", value=80000000, step=5000000)
+    software = st.number_input("Software & Tools (Rp)", value=5000000, step=500000)
     
     fixed_costs = rent + salaries + software
 
@@ -118,10 +118,10 @@ if contribution_margin > 0:
     
     # KPIs
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    kpi1.metric("Contribution Margin", f"${contribution_margin:.2f}")
+    kpi1.metric("Contribution Margin", f"Rp {contribution_margin:,.0f}")
     kpi2.metric("Margin %", f"{margin_percent:.1f}%")
     kpi3.metric("Break-Even Units", f"{break_even_units:,.0f} units", help="Units needed to sell to cover all costs")
-    kpi4.metric("Break-Even Revenue", f"${break_even_revenue:,.0f}")
+    kpi4.metric("Break-Even Revenue", f"Rp {break_even_revenue:,.0f}")
     
     # Visualization: Cost-Volume-Profit (CVP) Analysis
     units_range = np.linspace(0, break_even_units * 2, 50)
@@ -145,7 +145,7 @@ if contribution_margin > 0:
                                  marker=dict(size=12, color='black'),
                                  text=["Break-Even Point"], textposition="top left", name='BEP'))
 
-    fig_cvp.update_layout(title="Cost-Volume-Profit (CVP) Analysis", xaxis_title="Units Sold", yaxis_title="USD ($)", template="plotly_white")
+    fig_cvp.update_layout(title="Cost-Volume-Profit (CVP) Analysis", xaxis_title="Units Sold", yaxis_title="Rupiah (Rp)", template="plotly_white")
     st.plotly_chart(fig_cvp, use_container_width=True)
 
 else:

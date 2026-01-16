@@ -106,7 +106,13 @@ with c1:
 
 with c2:
     st.write("**Average Metrics per Cluster:**")
-    st.dataframe(cluster_metrics.set_index('Cluster').style.format("{:.1f}"))
+    st.dataframe(cluster_metrics.set_index('Cluster').style.format({
+        'Age': '{:.1f}',
+        'Income': 'Rp {:,.0f}',
+        'SpendingScore': '{:.1f}',
+        'Recency_Days': '{:.1f}',
+        'Frequency': '{:.1f}'
+    }))
     
     st.markdown("---")
     st.write("**Marketing Recommendations:**")
@@ -114,7 +120,7 @@ with c2:
         st.write(f"**Cluster {row['Cluster']}:**")
         if row['SpendingScore'] > 70:
             st.caption("🌟 VIP Customers: Target with exclusive loyalty programs and luxury product launches.")
-        elif row['Income'] > 80000 and row['SpendingScore'] < 40:
+        elif row['Income'] > 10000000 and row['SpendingScore'] < 40:
             st.caption("💰 High Potential: High income but low spending. Target with premium offers to unlock value.")
         elif row['Recency_Days'] > 100:
             st.caption("💤 At Risk: Haven't visited recently. Send win-back campaigns and discounts.")
