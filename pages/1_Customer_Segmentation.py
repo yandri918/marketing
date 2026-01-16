@@ -21,16 +21,53 @@ st.sidebar.header("Configuration")
 n_clusters = st.sidebar.slider("Number of Clusters", 2, 6, 3)
 st.sidebar.info("Adjust the number of clusters to see different segmentation scenarios.")
 
-# Load Data
-@st.cache_data
-def load_data():
-    return generate_customer_data()
+# Load Data (Persistence with Session State)
+if 'customer_df' not in st.session_state:
+    st.session_state.customer_df = generate_customer_data()
 
-df = load_data()
+# Add New Customer Form
+with st.sidebar.expander("➕ Add New Customer"):
+    with st.form("add_customer_form"):
+        new_age = st.number_input("Age", 18, 100, 30)
+        new_income = st.number_input("Income (Rp)", 3000000, 50000000, 10000000, step=1000000)
+        new_score = st.number_input("Spending Score (1-100)", 1, 100, 50)
+        new_recency = st.number_input("Recency (Days)", 0, 365, 10)
+        new_freq = st.number_input("Frequency (Visits)", 1, 100, 5)
+        
+        submitted = st.form_submit_button("Add Customer")
+        if submitted:
+            new_data = pd.DataFrame([{
+                'CustomerID': f"C{len(st.session_state.customer_df) + 1:03d}",
+                'Age': new_age,
+                'Income': new_income,
+                'SpendingScore': new_score,
+                'Recency_Days': new_recency,
+                'Frequency': new_freq,
+                'Monetary': new_income * 0.1 # Estimate
+            }])
+            st.session_state.customer_df = pd.concat([st.session_state.customer_df, new_data], ignore_index=True)
+            st.success("Customer Added!")
+            st.rerun()
 
-# Data Preview
-with st.expander("Show Raw Data"):
-    st.dataframe(df.head())
+df = st.session_state.customer_df
+
+# Data Edit Section
+with st.expander("📝 Edit Customer Data (Live Update)", expanded=True):
+    st.caption("Double-click any cell to edit. Clusters will update automatically.")
+    edited_df = st.data_editor(
+        df, 
+        key="customer_editor", 
+        num_rows="dynamic",
+        column_config={
+            "Income": st.column_config.NumberColumn(format="Rp %d")
+        }
+    )
+    
+    # Update dataframe with edits
+    if not edited_df.equals(df):
+        st.session_state.customer_df = edited_df
+        df = edited_df
+        st.rerun()
 
 # Feature Selection
 features = ['Income', 'SpendingScore', 'Age']
