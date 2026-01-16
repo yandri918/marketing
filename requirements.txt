@@ -9,3 +9,4 @@ prophet
 nltk
 wordcloud
 lifetimes
+fpdf
