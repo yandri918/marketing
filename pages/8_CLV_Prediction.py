@@ -110,7 +110,7 @@ if abs(corr) < 0.2:
 else:
     st.warning(f"⚠️ Correlation is high ({corr:.2f}). Gamma-Gamma model might be less accurate.")
 
-ggf = GammaGammaFitter(penalizer_coef=0)
+ggf = GammaGammaFitter(penalizer_coef=0.01)
 ggf.fit(df['frequency'], df['monetary_value'])
 
 # Predict CLV
