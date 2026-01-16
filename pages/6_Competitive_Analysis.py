@@ -81,3 +81,72 @@ fig_share.update_layout(barmode='group', title="Market Share Shift Prediction", 
 st.plotly_chart(fig_share, use_container_width=True)
 
 st.caption(f"Projected Share for Your Brand: {new_your_share:.1f}% (Change: {new_your_share - initial_shares[0]:.1f}%)")
+
+st.divider()
+
+# Advanced Unit Economics
+st.header("🧮 Unit Economics & Break-Even Analysis")
+st.markdown("Determine the precise sales volume needed to cover costs and achieve profitability.")
+
+ue_col1, ue_col2 = st.columns(2)
+
+with ue_col1:
+    st.subheader("💰 Cost Structure")
+    price_per_unit = st.number_input("Selling Price per Unit ($)", value=base_price, step=5.0)
+    cogs = st.number_input("COGS (Material + Labor)", value=40.0, step=1.0)
+    shipping = st.number_input("Shipping/Fulfillment", value=5.0, step=0.5)
+    marketing_cost = st.number_input("CAC (Marketing per Unit)", value=15.0, step=1.0)
+    
+    variable_cost = cogs + shipping + marketing_cost
+    contribution_margin = price_per_unit - variable_cost
+    margin_percent = (contribution_margin / price_per_unit) * 100
+
+with ue_col2:
+    st.subheader("🏢 Fixed Costs (Monthly)")
+    rent = st.number_input("Rent & Utilities", value=2000, step=100)
+    salaries = st.number_input("Salaries & Overhead", value=8000, step=500)
+    software = st.number_input("Software & Tools", value=500, step=50)
+    
+    fixed_costs = rent + salaries + software
+
+# Break-Even Calculation
+if contribution_margin > 0:
+    break_even_units = fixed_costs / contribution_margin
+    break_even_revenue = break_even_units * price_per_unit
+    
+    st.divider()
+    
+    # KPIs
+    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+    kpi1.metric("Contribution Margin", f"${contribution_margin:.2f}")
+    kpi2.metric("Margin %", f"{margin_percent:.1f}%")
+    kpi3.metric("Break-Even Units", f"{break_even_units:,.0f} units", help="Units needed to sell to cover all costs")
+    kpi4.metric("Break-Even Revenue", f"${break_even_revenue:,.0f}")
+    
+    # Visualization: Cost-Volume-Profit (CVP) Analysis
+    units_range = np.linspace(0, break_even_units * 2, 50)
+    total_revenue_line = units_range * price_per_unit
+    total_variable_line = units_range * variable_cost
+    total_cost_line = fixed_costs + total_variable_line
+    
+    fig_cvp = go.Figure()
+    
+    # Fixed Cost Line
+    fig_cvp.add_trace(go.Scatter(x=units_range, y=[fixed_costs]*50, mode='lines', name='Fixed Costs', line=dict(dash='dash', color='red')))
+    
+    # Total Cost Line
+    fig_cvp.add_trace(go.Scatter(x=units_range, y=total_cost_line, mode='lines', name='Total Costs', line=dict(color='orange')))
+    
+    # Revenue Line
+    fig_cvp.add_trace(go.Scatter(x=units_range, y=total_revenue_line, mode='lines', name='Total Revenue', line=dict(color='green', width=3)))
+    
+    # BEP Marker
+    fig_cvp.add_trace(go.Scatter(x=[break_even_units], y=[break_even_revenue], mode='markers+text', 
+                                 marker=dict(size=12, color='black'),
+                                 text=["Break-Even Point"], textposition="top left", name='BEP'))
+
+    fig_cvp.update_layout(title="Cost-Volume-Profit (CVP) Analysis", xaxis_title="Units Sold", yaxis_title="USD ($)", template="plotly_white")
+    st.plotly_chart(fig_cvp, use_container_width=True)
+
+else:
+    st.error("⚠️ Selling price is lower than variable costs! You are losing money on every sale.")
