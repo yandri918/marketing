@@ -53,3 +53,31 @@ def generate_sentiment_data():
     ]
     sentiments = ['Positive', 'Negative', 'Neutral', 'Positive', 'Negative', 'Positive', 'Neutral', 'Negative', 'Positive', 'Neutral']
     return pd.DataFrame({'Comment': comments * 10, 'Sentiment': sentiments * 10})
+
+def generate_transaction_log(n_customers=500, n_transactions=2000):
+    """Generates granular transaction logs for Cohort Analysis."""
+    np.random.seed(42)
+    
+    # Generate Customer Pool
+    customer_ids = [f'C{i:03d}' for i in range(1, n_customers + 1)]
+    
+    # Generate Transactions
+    data = []
+    start_date = datetime.today() - timedelta(days=365)
+    
+    for _ in range(n_transactions):
+        cust_id = np.random.choice(customer_ids)
+        # Random date within the last year
+        days_offset = np.random.randint(0, 365)
+        txn_date = start_date + timedelta(days=days_offset)
+        
+        amount = np.random.randint(50000, 2000000) # IDR 50k - 2M
+        
+        data.append({
+            'CustomerID': cust_id,
+            'TransactionDate': txn_date,
+            'Amount': amount
+        })
+        
+    df = pd.DataFrame(data)
+    return df.sort_values('TransactionDate')
