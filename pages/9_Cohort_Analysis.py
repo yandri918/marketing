@@ -21,12 +21,40 @@ Analyze user retention by grouping customers into **Cohorts** based on their fir
 *   **Cell Value**: Percentage of users who came back to buy again.
 """)
 
-# Load Data
-@st.cache_data
-def load_data():
-    return generate_transaction_log(n_customers=800, n_transactions=3000)
+# Data Source Controls
+st.sidebar.header("Data Configuration")
+data_source = st.sidebar.radio("Select Data Source", ["Generate Synthetic Data", "Upload CSV File"])
 
-df = load_data()
+if data_source == "Generate Synthetic Data":
+    n_cust = st.sidebar.slider("Number of Customers", 100, 2000, 800)
+    n_txn = st.sidebar.slider("Transaction Volume", 500, 10000, 3000)
+    
+    if st.sidebar.button("Generate New Data"):
+        st.cache_data.clear()
+        
+    @st.cache_data
+    def get_synthetic_data(n_c, n_t):
+        return generate_transaction_log(n_customers=n_c, n_transactions=n_t)
+        
+    df = get_synthetic_data(n_cust, n_txn)
+    st.info(f"Using Synthetic Data: {len(df)} transactions from {df['CustomerID'].nunique()} customers.")
+
+else:
+    uploaded_file = st.sidebar.file_uploader("Upload Transaction CSV", type=["csv"])
+    st.sidebar.caption("Required columns: `CustomerID`, `TransactionDate` (YYYY-MM-DD), `Amount`")
+    
+    if uploaded_file is not None:
+        try:
+            df = pd.read_csv(uploaded_file)
+            # Ensure datetime conversion
+            df['TransactionDate'] = pd.to_datetime(df['TransactionDate'])
+            st.success(f"Loaded {len(df)} transactions from uploaded file.")
+        except Exception as e:
+            st.error(f"Error reading file: {e}")
+            st.stop()
+    else:
+        st.warning("Please upload a CSV file to proceed. Showing placeholder data (Empty).")
+        st.stop()
 
 # Data Preprocessing for Cohort Analysis
 def get_month(x): 
