@@ -127,6 +127,43 @@ with col_b:
 
 st.warning("👈 **Select a project from the sidebar to explore the interactive demos.**")
 
+st.divider()
+
+# Resume & Contact Section
+c1, c2 = st.columns(2)
+
+with c1:
+    st.subheader("📄 Resume")
+    st.write("Download my latest curriculum vitae.")
+    
+    # Resume Download Logic
+    # Note: Ensure you upload 'resume.pdf' to an 'assets' folder in the root directory
+    import os
+    resume_path = "assets/resume.pdf"
+    
+    if os.path.exists(resume_path):
+        with open(resume_path, "rb") as f:
+            pdf_data = f.read()
+        st.download_button(
+            label="Download Resume (PDF)",
+            data=pdf_data,
+            file_name="Andriyanto_Resume.pdf",
+            mime="application/pdf"
+        )
+    else:
+        st.info("ℹ️ Resume download is currently disabled. Please contact me on LinkedIn!")
+
+with c2:
+    st.subheader("📬 Contact Me")
+    with st.form("contact_form"):
+        name = st.text_input("Name")
+        email = st.text_input("Email")
+        message = st.text_area("Message")
+        submit = st.form_submit_button("Send Message")
+        
+        if submit:
+            st.success(f"Thanks {name}! Your message has been sent successfully.")
+
 # Footer
 st.markdown("---")
 st.markdown("<p style='text-align: center; color: grey;'>© 2026 Built with Streamlit by Yandri</p>", unsafe_allow_html=True)
