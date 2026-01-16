@@ -42,7 +42,7 @@ with col1:
     
 with col2:
     st.markdown("""
-    <h1 style='text-align: left; color: #2C3E50; margin-bottom: 0px;'>Hi, I'm Yandri 👋</h1>
+    <h1 style='text-align: left; color: #2C3E50; margin-bottom: 0px;'>Hi, I'm Andriyanto, BScE, S.E. 👋</h1>
     <h3 style='text-align: left; color: #7F8C8D; margin-top: 5px;'>Marketing Analyst | Growth Engineer | Data Scientist</h3>
     <hr style='border: 1px solid #ddd; width: 50%; margin-left: 0;'>
     <p style='font-size: 18px; line-height: 1.6; color: #34495E;'>
