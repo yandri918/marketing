@@ -28,22 +28,38 @@ df['Drop-off'] = df['Users'].diff().apply(lambda x: f"{abs(x):.0f} users lost" i
 # Funnel Visualization
 col1, col2 = st.columns([2, 1])
 
+with col2:
+    # Editable Data
+    st.subheader("Performance Metrics (Editable)")
+    edited_df = st.data_editor(
+        df[['Stage', 'Users']], 
+        key="funnel_editor",
+        num_rows="dynamic",
+        use_container_width=True
+    )
+    
+    # Recalculate metrics based on edited data
+    edited_df['Conversion Rate'] = edited_df['Users'].pct_change().apply(lambda x: f"{ (x+1)*100:.1f}%" if pd.notnull(x) else "100%")
+    edited_df['Drop-off'] = edited_df['Users'].diff().apply(lambda x: f"{abs(x):.0f} users lost" if pd.notnull(x) and x < 0 else "-")
+    
+    # Insights based on data
+    max_drop_idx = edited_df['Users'].pct_change().idxmin()
+    if pd.notnull(max_drop_idx) and max_drop_idx > 0:
+        drop_stage = edited_df.loc[max_drop_idx, 'Stage']
+        prev_stage = edited_df.loc[max_drop_idx-1, 'Stage']
+        drop_val = abs(edited_df.loc[max_drop_idx, 'Users'] - edited_df.loc[max_drop_idx-1, 'Users'])
+        st.info(f"💡 **Insight:** The biggest drop ({drop_val} users) occurs between **{prev_stage}** and **{drop_stage}**.")
+
+# Funnel Visualization (Updated with Edited Data)
 with col1:
     fig = go.Figure(go.Funnel(
-        y=df['Stage'],
-        x=df['Users'],
+        y=edited_df['Stage'],
+        x=edited_df['Users'],
         textinfo="value+percent initial",
         marker={"color": ["#3498db", "#e67e22", "#e74c3c", "#9b59b6", "#2ecc71"]}
     ))
     fig.update_layout(title="Conversion Funnel", template="plotly_white")
     st.plotly_chart(fig, use_container_width=True)
-
-with col2:
-    st.subheader("Performance Metrics")
-    st.dataframe(df[['Stage', 'Users', 'Conversion Rate', 'Drop-off']], hide_index=True)
-    
-    # Insights based on data
-    st.info("💡 **Insight:** The biggest drop-off (53%) occurs between **Interest** and **Consideration**. Consider optimizing the landing page content or adding retargeting ads.")
 
 st.divider()
 
