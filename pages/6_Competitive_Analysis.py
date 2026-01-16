@@ -92,7 +92,7 @@ ue_col1, ue_col2 = st.columns(2)
 
 with ue_col1:
     st.subheader("💰 Cost Structure")
-    price_per_unit = st.number_input("Selling Price per Unit (Rp)", value=base_price, step=5000.0)
+    price_per_unit = st.number_input("Selling Price per Unit (Rp)", value=float(base_price), step=5000.0)
     cogs = st.number_input("COGS (Material + Labor) Rp", value=60000.0, step=1000.0)
     shipping = st.number_input("Shipping/Fulfillment (Rp)", value=15000.0, step=1000.0)
     marketing_cost = st.number_input("CAC (Marketing per Unit) Rp", value=25000.0, step=1000.0)
