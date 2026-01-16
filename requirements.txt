@@ -8,3 +8,4 @@ seaborn
 prophet
 nltk
 wordcloud
+lifetimes
