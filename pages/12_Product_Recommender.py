@@ -21,9 +21,9 @@ def generate_user_item_matrix():
     n_products = 10
     
     products = [
-        "Premium NPK Fertilizer", "Organic Pesticide", "Growth Booster Hormone", 
-        "Hydroponic Kit A", "Hydroponic Kit B", "Drip Irrigation Hose", 
-        "Sprayer 5L", "Soil pH Meter", "Greenhouse Plastic", "Coco Peat Slab"
+        "Wireless Noise-Canceling Headphones", "Smart Watch Series 7", "Mechanical Gaming Keyboard", 
+        "Ergonomic Office Chair", "4K Monitor 27-inch", "USB-C Docking Station", 
+        "Portable Power Bank 20000mAh", "Bluetooth Smart Speaker", "Laptop Stand", "HD Webcam 1080p"
     ]
     
     # 0 = No purchase, 1-5 = Rating/Purchase Count
@@ -31,10 +31,10 @@ def generate_user_item_matrix():
     data = np.random.randint(0, 6, size=(n_users, n_products))
     
     # Inject patterns: 
-    # Users 0-9 like Fertilizers/Chemicals (Cols 0-2)
-    data[:10, 0:3] = np.random.randint(3, 6, size=(10, 3))
-    # Users 10-19 like Hydroponics (Cols 3-5)
-    data[10:, 3:6] = np.random.randint(3, 6, size=(10, 3))
+    # Users 0-9 like Mobile Tech (Cols 0-2 & 7)
+    data[:10, [0, 1, 7]] = np.random.randint(3, 6, size=(10, 3))
+    # Users 10-19 like Home Office (Cols 3-5 & 9)
+    data[10:, [3, 4, 5, 9]] = np.random.randint(3, 6, size=(10, 4))
     
     # Random sparsity
     mask = np.random.choice([0, 1], size=data.shape, p=[0.3, 0.7])
