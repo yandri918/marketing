@@ -27,6 +27,7 @@ This portfolio demonstrates my ability to bridge the gap between **Marketing Str
 ### 3. 🔮 Predictive Modeling (Pro)
 - **CLV Prediction**: Probabilistic models (**BG/NBD** & **Gamma-Gamma**) to estimate future customer value and churn probability.
 - **Cohort Analysis**: Retention heatmaps to track user loyalty and product health over time.
+- **MMM & Budget Optimizer**: **Principal-Level** Prescriptive Analytics using **Ridge Regression** and **Scipy Optimization** to allocate marketing budgets scientifically.
 
 ### 4. 💼 Business Strategy
 - **Competitive Analysis**: Unit economics, break-even analysis, and price elasticity modeling.
