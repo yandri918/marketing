@@ -327,6 +327,9 @@ with tab3:
             
             efficiency_data.append({
                 'Channel': channel,
+                'Spend': data['spend'],
+                'Leads': data['leads'],
+                'Customers': data['customers'],
                 'Cost per Lead': cpl,
                 'Cost per Customer': cac,
                 'Conversion Rate': data['conv_rate'] * 100,
@@ -335,9 +338,55 @@ with tab3:
         
         eff_df = pd.DataFrame(efficiency_data)
         
-        st.markdown("### Efficiency Comparison")
+        st.markdown("### Efficiency Comparison (Editable)")
         
-        st.dataframe(eff_df.style.format({
+        st.info("💡 **Edit the data below** - Modify Spend, Leads, or Customers to see efficiency metrics update in real-time.")
+        
+        # Make data editable
+        edited_eff_df = st.data_editor(
+            eff_df[['Channel', 'Spend', 'Leads', 'Customers']],
+            key="efficiency_editor",
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Channel": st.column_config.TextColumn("Channel", disabled=True),
+                "Spend": st.column_config.NumberColumn("Spend (Rp)", min_value=0, step=100000),
+                "Leads": st.column_config.NumberColumn("Leads", min_value=0, step=10),
+                "Customers": st.column_config.NumberColumn("Customers", min_value=0, step=5)
+            }
+        )
+        
+        # Recalculate metrics with edited data
+        updated_efficiency_data = []
+        
+        for idx, row in edited_eff_df.iterrows():
+            cpl = row['Spend'] / row['Leads'] if row['Leads'] > 0 else 0
+            cac = row['Spend'] / row['Customers'] if row['Customers'] > 0 else 0
+            conv_rate = (row['Customers'] / row['Leads'] * 100) if row['Leads'] > 0 else 0
+            efficiency_score = (row['Customers'] / (row['Spend'] / 1000000)) if row['Spend'] > 0 else 0
+            
+            updated_efficiency_data.append({
+                'Channel': row['Channel'],
+                'Spend': row['Spend'],
+                'Leads': row['Leads'],
+                'Customers': row['Customers'],
+                'Cost per Lead': cpl,
+                'Cost per Customer': cac,
+                'Conversion Rate': conv_rate,
+                'Efficiency Score': efficiency_score
+            })
+        
+        updated_eff_df = pd.DataFrame(updated_efficiency_data)
+        
+        st.divider()
+        
+        # Display calculated metrics
+        st.markdown("### Calculated Efficiency Metrics")
+        
+        st.dataframe(updated_eff_df.style.format({
+            'Spend': 'Rp {:,.0f}',
+            'Leads': '{:,.0f}',
+            'Customers': '{:,.0f}',
             'Cost per Lead': 'Rp {:,.0f}',
             'Cost per Customer': 'Rp {:,.0f}',
             'Conversion Rate': '{:.1f}%',
@@ -348,7 +397,7 @@ with tab3:
         
         st.divider()
         
-        # Visualizations
+        # Visualizations with updated data
         col1, col2 = st.columns(2)
         
         with col1:
@@ -358,15 +407,15 @@ with tab3:
             
             fig_cost.add_trace(go.Bar(
                 name='Cost per Lead',
-                x=eff_df['Channel'],
-                y=eff_df['Cost per Lead'],
+                x=updated_eff_df['Channel'],
+                y=updated_eff_df['Cost per Lead'],
                 marker_color='#3498DB'
             ))
             
             fig_cost.add_trace(go.Bar(
                 name='Cost per Customer',
-                x=eff_df['Channel'],
-                y=eff_df['Cost per Customer'],
+                x=updated_eff_df['Channel'],
+                y=updated_eff_df['Cost per Customer'],
                 marker_color='#E74C3C'
             ))
             
@@ -382,7 +431,7 @@ with tab3:
             st.markdown("### Conversion Rate Comparison")
             
             fig_conv = px.bar(
-                eff_df,
+                updated_eff_df,
                 x='Channel',
                 y='Conversion Rate',
                 color='Conversion Rate',
