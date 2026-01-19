@@ -595,29 +595,51 @@ with tab4:
 with tab5:
     st.subheader("📈 Funnel Trends & Patterns")
     
-    # Generate time series data
+    # Use actual funnel data for trends
+    st.info("💡 **Trends are based on your current funnel data.** Edit the funnel in Tab 1 to see changes here.")
+    
+    # Generate time series data based on current funnel metrics
     dates = pd.date_range(end=pd.Timestamp.now(), periods=30, freq='D')
     
+    # Get current conversion rate
+    current_conv_rate = funnel_metrics.get('overall_conversion', 0)
+    current_visitors = df_main.iloc[0]['Users']
+    current_conversions = df_main.iloc[-1]['Users']
+    
     trend_data = []
-    for date in dates:
-        # Simulate daily funnel with some variation
-        base_visitors = 10000
-        daily_variation = np.random.normal(1, 0.1)
+    for i, date in enumerate(dates):
+        # Add realistic daily variation around current conversion rate
+        daily_variation = np.random.normal(1, 0.05)  # ±5% variation
+        
+        # Simulate visitors with some variation
+        daily_visitors = int(current_visitors * daily_variation)
+        
+        # Calculate conversions based on current conversion rate with variation
+        conv_rate_variation = current_conv_rate * np.random.normal(1, 0.1)  # ±10% variation
+        daily_conversions = int(daily_visitors * conv_rate_variation / 100)
         
         trend_data.append({
             'Date': date,
-            'Awareness': int(base_visitors * daily_variation),
-            'Interest': int(base_visitors * 0.5 * daily_variation),
-            'Consideration': int(base_visitors * 0.25 * daily_variation),
-            'Intent': int(base_visitors * 0.1 * daily_variation),
-            'Purchase': int(base_visitors * 0.035 * daily_variation)
+            'Awareness': daily_visitors,
+            'Interest': int(daily_visitors * 0.5 * daily_variation),
+            'Consideration': int(daily_visitors * 0.25 * daily_variation),
+            'Intent': int(daily_visitors * 0.1 * daily_variation),
+            'Purchase': daily_conversions,
+            'Conv. Rate': (daily_conversions / daily_visitors * 100) if daily_visitors > 0 else 0
         })
     
     trend_df = pd.DataFrame(trend_data)
-    trend_df['Conv. Rate'] = (trend_df['Purchase'] / trend_df['Awareness']) * 100
+    
+    # Display current metrics
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Current Conv. Rate", f"{current_conv_rate:.2f}%")
+    col2.metric("Avg Conv. Rate (30d)", f"{trend_df['Conv. Rate'].mean():.2f}%")
+    col3.metric("Trend Volatility", f"{trend_df['Conv. Rate'].std():.2f}%")
+    
+    st.divider()
     
     # Conversion rate over time
-    st.markdown("### Conversion Rate Trend")
+    st.markdown("### Conversion Rate Trend (Based on Current Funnel)")
     
     fig_trend = go.Figure()
     
@@ -639,6 +661,14 @@ with tab5:
         name='7-Day MA',
         line=dict(color='orange', width=2, dash='dash')
     ))
+    
+    # Add current conversion rate as reference line
+    fig_trend.add_hline(
+        y=current_conv_rate,
+        line_dash="dot",
+        line_color="green",
+        annotation_text=f"Current: {current_conv_rate:.2f}%"
+    )
     
     fig_trend.update_layout(
         title="Conversion Rate Over Time",
