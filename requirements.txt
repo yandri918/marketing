@@ -12,3 +12,4 @@ lifetimes
 fpdf
 scipy
 statsmodels
+textblob
