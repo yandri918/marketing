@@ -120,7 +120,11 @@ date_range = st.sidebar.selectbox(
 st.sidebar.divider()
 
 # ========== DATA LOADING ==========
-df_main = generate_funnel_data()
+# Initialize session state for editable data
+if 'funnel_data' not in st.session_state:
+    st.session_state.funnel_data = generate_funnel_data()
+
+df_main = st.session_state.funnel_data
 
 # Generate multi-channel data
 channels = ['Organic', 'Paid Search', 'Social Media', 'Email', 'Direct']
@@ -193,7 +197,7 @@ with tab1:
         st.plotly_chart(fig_funnel, use_container_width=True)
     
     with col2:
-        st.markdown("### Stage Performance")
+        st.markdown("### Stage Performance (Editable)")
         
         # Editable funnel data
         edited_df = st.data_editor(
@@ -203,19 +207,25 @@ with tab1:
             use_container_width=True
         )
         
+        # Update session state if data changed
+        if not edited_df.equals(df_main[['Stage', 'Users']]):
+            st.session_state.funnel_data = edited_df
+            st.rerun()
+        
         # Stage-by-stage conversion
         st.markdown("### Conversion Rates")
         
         for i in range(1, len(df_main)):
-            conv_rate = (df_main.iloc[i]['Users'] / df_main.iloc[i-1]['Users']) * 100
-            drop_off = df_main.iloc[i-1]['Users'] - df_main.iloc[i]['Users']
-            
-            st.metric(
-                f"{df_main.iloc[i-1]['Stage']} → {df_main.iloc[i]['Stage']}",
-                f"{conv_rate:.1f}%",
-                delta=f"-{drop_off:,} users",
-                delta_color="inverse"
-            )
+            if i < len(df_main) and df_main.iloc[i-1]['Users'] > 0:
+                conv_rate = (df_main.iloc[i]['Users'] / df_main.iloc[i-1]['Users']) * 100
+                drop_off = df_main.iloc[i-1]['Users'] - df_main.iloc[i]['Users']
+                
+                st.metric(
+                    f"{df_main.iloc[i-1]['Stage']} → {df_main.iloc[i]['Stage']}",
+                    f"{conv_rate:.1f}%",
+                    delta=f"-{drop_off:,} users",
+                    delta_color="inverse"
+                )
     
     # Drop-off Analysis
     st.markdown("### Drop-off Analysis")
@@ -641,28 +651,42 @@ with tab6:
     col1, col2 = st.columns(2)
     
     with col1:
-        stage_to_optimize = st.selectbox(
-            "Select stage to optimize",
-            [f"{df_main.iloc[i-1]['Stage']} → {df_main.iloc[i]['Stage']}" for i in range(1, len(df_main))]
-        )
+        # Create stage options
+        stage_options = [f"{df_main.iloc[i-1]['Stage']} → {df_main.iloc[i]['Stage']}" for i in range(1, len(df_main))]
         
-        improvement_pct = st.slider("Expected Improvement (%)", 1, 50, 10)
+        if stage_options:
+            stage_to_optimize = st.selectbox(
+                "Select stage to optimize",
+                stage_options
+            )
+            
+            improvement_pct = st.slider("Expected Improvement (%)", 1, 50, 10)
+        else:
+            st.warning("Please add at least 2 stages to the funnel")
+            stage_to_optimize = None
     
     with col2:
-        # Calculate impact
-        stage_idx = int(stage_to_optimize.split('→')[0].strip()[-1]) if stage_to_optimize else 1
-        
-        if stage_idx < len(df_main):
-            current_users = df_main.iloc[stage_idx-1]['Users']
-            current_conv = (df_main.iloc[stage_idx]['Users'] / current_users) * 100
-            improved_conv = current_conv * (1 + improvement_pct / 100)
+        if stage_to_optimize and len(df_main) >= 2:
+            # Find the stage index from the selection
+            stage_parts = stage_to_optimize.split('→')
+            from_stage = stage_parts[0].strip()
+            to_stage = stage_parts[1].strip()
             
-            additional_users = current_users * (improved_conv - current_conv) / 100
-            additional_revenue = additional_users * avg_order_value
+            # Find indices
+            from_idx = df_main[df_main['Stage'] == from_stage].index[0] if from_stage in df_main['Stage'].values else 0
+            to_idx = df_main[df_main['Stage'] == to_stage].index[0] if to_stage in df_main['Stage'].values else 1
             
-            st.metric("Current Conversion", f"{current_conv:.1f}%")
-            st.metric("Improved Conversion", f"{improved_conv:.1f}%", delta=f"+{improvement_pct}%")
-            st.metric("Additional Revenue", f"Rp {additional_revenue/1e9:.2f}B", delta="Potential Gain")
+            if from_idx < len(df_main) and to_idx < len(df_main) and df_main.iloc[from_idx]['Users'] > 0:
+                current_users = df_main.iloc[from_idx]['Users']
+                current_conv = (df_main.iloc[to_idx]['Users'] / current_users) * 100
+                improved_conv = current_conv * (1 + improvement_pct / 100)
+                
+                additional_users = current_users * (improved_conv - current_conv) / 100
+                additional_revenue = additional_users * avg_order_value
+                
+                st.metric("Current Conversion", f"{current_conv:.1f}%")
+                st.metric("Improved Conversion", f"{improved_conv:.1f}%", delta=f"+{improvement_pct}%")
+                st.metric("Additional Revenue", f"Rp {additional_revenue/1e9:.2f}B", delta="Potential Gain")
     
     st.divider()
     
