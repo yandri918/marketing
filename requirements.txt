@@ -11,3 +11,4 @@ wordcloud
 lifetimes
 fpdf
 scipy
+statsmodels
