@@ -567,8 +567,67 @@ with tab4:
     Compare different attribution models to understand which touchpoints deserve credit for conversions.
     """)
     
-    # Simulated customer journey
-    touchpoints = ['Social Media Ad', 'Google Search', 'Email Campaign', 'Direct Visit', 'Purchase']
+    # Initialize touchpoints in session state
+    if 'touchpoints' not in st.session_state:
+        st.session_state.touchpoints = ['Social Media Ad', 'Google Search', 'Email Campaign', 'Direct Visit', 'Purchase']
+    
+    # Editable touchpoints
+    st.markdown("### 🛣️ Customer Journey Touchpoints (Editable)")
+    
+    st.info("💡 **Customize your customer journey** - Add, edit, or remove touchpoints to match your actual marketing funnel.")
+    
+    # Create editable list
+    touchpoints_df = pd.DataFrame({
+        'Order': range(1, len(st.session_state.touchpoints) + 1),
+        'Touchpoint': st.session_state.touchpoints
+    })
+    
+    edited_touchpoints_df = st.data_editor(
+        touchpoints_df,
+        key="touchpoints_editor",
+        use_container_width=True,
+        hide_index=True,
+        num_rows="dynamic",
+        column_config={
+            "Order": st.column_config.NumberColumn("Order", disabled=True),
+            "Touchpoint": st.column_config.TextColumn("Touchpoint Name", max_chars=50)
+        }
+    )
+    
+    # Update touchpoints if changed
+    new_touchpoints = edited_touchpoints_df['Touchpoint'].tolist()
+    if new_touchpoints != st.session_state.touchpoints:
+        st.session_state.touchpoints = new_touchpoints
+        st.rerun()
+    
+    touchpoints = st.session_state.touchpoints
+    
+    # Quick add buttons
+    st.markdown("**Quick Add Common Touchpoints:**")
+    col1, col2, col3, col4, col5 = st.columns(5)
+    
+    with col1:
+        if st.button("➕ Facebook Ad"):
+            st.session_state.touchpoints.append("Facebook Ad")
+            st.rerun()
+    with col2:
+        if st.button("➕ Instagram"):
+            st.session_state.touchpoints.append("Instagram Post")
+            st.rerun()
+    with col3:
+        if st.button("➕ YouTube"):
+            st.session_state.touchpoints.append("YouTube Video")
+            st.rerun()
+    with col4:
+        if st.button("➕ Webinar"):
+            st.session_state.touchpoints.append("Webinar Attendance")
+            st.rerun()
+    with col5:
+        if st.button("🔄 Reset"):
+            st.session_state.touchpoints = ['Social Media Ad', 'Google Search', 'Email Campaign', 'Direct Visit', 'Purchase']
+            st.rerun()
+    
+    st.divider()
     
     # Calculate attribution for each model
     models = {
