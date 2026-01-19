@@ -460,19 +460,69 @@ with tab2:
 with tab3:
     st.subheader("👥 Cohort Conversion Analysis")
     
-    # Generate cohort data
-    cohort_df = generate_cohort_data(n_cohorts=6)
+    # Initialize cohort data in session state if not exists
+    if 'cohort_data' not in st.session_state:
+        st.session_state.cohort_data = generate_cohort_data(n_cohorts=6)
     
-    st.markdown("### Monthly Cohort Performance")
+    cohort_df = st.session_state.cohort_data
     
-    # Display cohort table
-    st.dataframe(cohort_df.style.format({
-        'Awareness': '{:,.0f}',
-        'Interest': '{:,.0f}',
-        'Consideration': '{:,.0f}',
-        'Intent': '{:,.0f}',
-        'Purchase': '{:,.0f}'
-    }).background_gradient(cmap='Blues'), use_container_width=True, hide_index=True)
+    st.markdown("### Monthly Cohort Performance (Editable)")
+    
+    st.info("💡 **Edit cohort data below** - Modify user counts for each cohort and stage. Conversion rates will auto-calculate.")
+    
+    # Make cohort data editable
+    edited_cohort_df = st.data_editor(
+        cohort_df,
+        key="cohort_editor",
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Cohort": st.column_config.TextColumn("Cohort (YYYY-MM)", disabled=True),
+            "Awareness": st.column_config.NumberColumn("Awareness", min_value=0, max_value=1000000, step=100),
+            "Interest": st.column_config.NumberColumn("Interest", min_value=0, max_value=1000000, step=100),
+            "Consideration": st.column_config.NumberColumn("Consideration", min_value=0, max_value=1000000, step=100),
+            "Intent": st.column_config.NumberColumn("Intent", min_value=0, max_value=1000000, step=100),
+            "Purchase": st.column_config.NumberColumn("Purchase", min_value=0, max_value=1000000, step=10)
+        }
+    )
+    
+    # Update session state if data changed
+    if not edited_cohort_df.equals(cohort_df):
+        st.session_state.cohort_data = edited_cohort_df
+        cohort_df = edited_cohort_df
+        st.rerun()
+    
+    # Add new cohort button
+    col_btn1, col_btn2 = st.columns([1, 4])
+    with col_btn1:
+        if st.button("➕ Add New Cohort"):
+            # Get next month
+            last_cohort = cohort_df.iloc[-1]['Cohort']
+            last_date = pd.to_datetime(last_cohort)
+            next_date = last_date + pd.DateOffset(months=1)
+            
+            new_cohort = pd.DataFrame([{
+                'Cohort': next_date.strftime('%Y-%m'),
+                'Awareness': 10000,
+                'Interest': 5000,
+                'Consideration': 2500,
+                'Intent': 1000,
+                'Purchase': 350
+            }])
+            
+            st.session_state.cohort_data = pd.concat([cohort_df, new_cohort], ignore_index=True)
+            st.rerun()
+    
+    st.divider()
+    
+    # Calculate conversion rates
+    cohort_df['Conv. Rate'] = (cohort_df['Purchase'] / cohort_df['Awareness']) * 100
+    
+    # Display metrics
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Cohorts", len(cohort_df))
+    col2.metric("Avg Conv. Rate", f"{cohort_df['Conv. Rate'].mean():.2f}%")
+    col3.metric("Best Cohort", f"{cohort_df.loc[cohort_df['Conv. Rate'].idxmax(), 'Cohort']} ({cohort_df['Conv. Rate'].max():.2f}%)")
     
     st.divider()
     
