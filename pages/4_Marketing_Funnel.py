@@ -303,9 +303,22 @@ with tab1:
 with tab2:
     st.subheader("🔀 Multi-Channel Funnel Comparison")
     
-    # Channel Performance Overview
-    st.markdown("### Channel Performance Metrics")
+    # Initialize channel data in session state if not exists
+    if 'channel_data' not in st.session_state:
+        channel_data_init = {}
+        for channel in channels:
+            multiplier = np.random.uniform(0.7, 1.3)
+            channel_df = df_main.copy()
+            channel_df['Users'] = (channel_df['Users'] * multiplier).astype(int)
+            channel_data_init[channel] = channel_df
+        st.session_state.channel_data = channel_data_init
     
+    channel_data = st.session_state.channel_data
+    
+    # Channel Performance Overview
+    st.markdown("### Channel Performance Metrics (Editable)")
+    
+    # Create editable table for channel metrics
     channel_metrics = []
     for channel, df_channel in channel_data.items():
         metrics = calculate_funnel_metrics(df_channel)
@@ -320,7 +333,61 @@ with tab2:
     channel_metrics_df = pd.DataFrame(channel_metrics)
     channel_metrics_df = channel_metrics_df.sort_values('Conv. Rate', ascending=False)
     
-    st.dataframe(channel_metrics_df.style.format({
+    # Make it editable
+    st.info("💡 **Edit channel data below** - Change Visitors and Conversions for each channel. Conv. Rate and Revenue will auto-calculate.")
+    
+    edited_channel_metrics = st.data_editor(
+        channel_metrics_df[['Channel', 'Visitors', 'Conversions']],
+        key="channel_metrics_editor",
+        use_container_width=True,
+        hide_index=True
+    )
+    
+    # Update channel data if edited
+    data_changed = False
+    for idx, row in edited_channel_metrics.iterrows():
+        channel = row['Channel']
+        new_visitors = row['Visitors']
+        new_conversions = row['Conversions']
+        
+        # Check if data changed
+        if channel in channel_data:
+            old_visitors = channel_data[channel].iloc[0]['Users']
+            old_conversions = channel_data[channel].iloc[-1]['Users']
+            
+            if old_visitors != new_visitors or old_conversions != new_conversions:
+                data_changed = True
+                
+                # Update channel data proportionally
+                if old_visitors > 0:
+                    ratio = new_visitors / old_visitors
+                    updated_df = channel_data[channel].copy()
+                    updated_df['Users'] = (updated_df['Users'] * ratio).astype(int)
+                    updated_df.iloc[-1, updated_df.columns.get_loc('Users')] = new_conversions
+                    channel_data[channel] = updated_df
+    
+    if data_changed:
+        st.session_state.channel_data = channel_data
+        st.rerun()
+    
+    # Recalculate metrics with updated data
+    channel_metrics_display = []
+    for channel, df_channel in channel_data.items():
+        metrics = calculate_funnel_metrics(df_channel)
+        channel_metrics_display.append({
+            'Channel': channel,
+            'Visitors': df_channel.iloc[0]['Users'],
+            'Conversions': df_channel.iloc[-1]['Users'],
+            'Conv. Rate': metrics.get('overall_conversion', 0),
+            'Revenue': df_channel.iloc[-1]['Users'] * avg_order_value
+        })
+    
+    channel_metrics_display_df = pd.DataFrame(channel_metrics_display)
+    channel_metrics_display_df = channel_metrics_display_df.sort_values('Conv. Rate', ascending=False)
+    
+    # Display full metrics table
+    st.markdown("### 📊 Complete Channel Metrics")
+    st.dataframe(channel_metrics_display_df.style.format({
         'Visitors': '{:,.0f}',
         'Conversions': '{:,.0f}',
         'Conv. Rate': '{:.2f}%',
