@@ -151,6 +151,33 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 with tab1:
     st.subheader("📊 Funnel Overview")
     
+    # Editable AOV
+    st.markdown("### ⚙️ Configuration")
+    col_aov1, col_aov2 = st.columns([1, 3])
+    
+    with col_aov1:
+        # Initialize AOV in session state
+        if 'avg_order_value' not in st.session_state:
+            st.session_state.avg_order_value = 1500000
+        
+        avg_order_value = st.number_input(
+            "Average Order Value (AOV) - Rp",
+            min_value=100000,
+            max_value=100000000,
+            value=st.session_state.avg_order_value,
+            step=100000,
+            key="aov_input",
+            help="Edit this to change revenue calculations"
+        )
+        
+        # Update session state
+        st.session_state.avg_order_value = avg_order_value
+    
+    with col_aov2:
+        st.info(f"💡 **Current AOV:** Rp {avg_order_value:,} - All revenue calculations will update automatically when you change this value.")
+    
+    st.divider()
+    
     # Calculate metrics
     funnel_metrics = calculate_funnel_metrics(df_main)
     
@@ -160,10 +187,9 @@ with tab1:
     col2.metric("Conversions", f"{df_main.iloc[-1]['Users']:,}")
     col3.metric("Overall Conv. Rate", f"{funnel_metrics.get('overall_conversion', 0):.2f}%")
     
-    # Calculate additional metrics
+    # Calculate additional metrics with editable AOV
     total_visitors = df_main.iloc[0]['Users']
     conversions = df_main.iloc[-1]['Users']
-    avg_order_value = 1500000  # Rp
     total_revenue = conversions * avg_order_value
     revenue_per_visitor = total_revenue / total_visitors if total_visitors > 0 else 0
     
