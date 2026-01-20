@@ -255,7 +255,7 @@ with tab1:
             'Sales',
             'Predicted_Sales'
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="chart_actual_vs_predicted")
     
     with col2:
         st.subheader("Channel Coefficients")
@@ -263,7 +263,7 @@ with tab1:
         coeff_dict = {ch: coeffs[i] for i, ch in enumerate(channels)}
         
         fig_coeff = plot_coefficient_importance(coeff_dict)
-        st.plotly_chart(fig_coeff, use_container_width=True)
+        st.plotly_chart(fig_coeff, use_container_width=True, key="chart_coefficients")
 
 # ========== TAB 2: ADSTOCK & SATURATION ==========
 with tab2:
@@ -281,7 +281,7 @@ with tab2:
         }
         
         fig_adstock = plot_adstock_curves(adstock_configs, periods=20)
-        st.plotly_chart(fig_adstock, use_container_width=True)
+        st.plotly_chart(fig_adstock, use_container_width=True, key="chart_adstock_curves")
         
         st.info("💡 **Insight**: Higher decay = longer lasting effect. TV typically has highest decay (0.7-0.9).")
     
@@ -311,7 +311,7 @@ with tab2:
             x_range=(0, df_transformed[[f"{ch}_adstock" for ch in channels]].max().max()),
             show_optimal=True
         )
-        st.plotly_chart(fig_sat, use_container_width=True)
+        st.plotly_chart(fig_sat, use_container_width=True, key="chart_saturation_curves")
         
         st.info("💡 **Insight**: Stars mark optimal spend points (70% efficiency threshold).")
 
@@ -369,7 +369,7 @@ with tab3:
         df_decomposed['baseline'].mean(),
         df_decomposed['Sales'].sum()
     )
-    st.plotly_chart(fig_waterfall, use_container_width=True)
+    st.plotly_chart(fig_waterfall, use_container_width=True, key="chart_waterfall")
     
     st.markdown("---")
     
@@ -423,7 +423,7 @@ with tab3:
         'Date',
         [f"{ch}_contribution" for ch in channels]
     )
-    st.plotly_chart(fig_contrib_time, use_container_width=True)
+    st.plotly_chart(fig_contrib_time, use_container_width=True, key="chart_contrib_time")
 
 # ========== TAB 4: BUDGET OPTIMIZER ==========
 with tab4:
@@ -532,7 +532,7 @@ with tab4:
                     hole=0.4,
                     color_discrete_sequence=px.colors.sequential.RdBu
                 )
-                st.plotly_chart(fig_pie, use_container_width=True)
+                st.plotly_chart(fig_pie, use_container_width=True, key="chart_budget_pie")
                 
                 st.success(f"✅ **Predicted {objective.title()}**: Rp {predicted_outcome/1e9:.2f}B")
             else:
@@ -580,7 +580,7 @@ with tab4:
                     obj1.title(),
                     obj2.title()
                 )
-                st.plotly_chart(fig_pareto, use_container_width=True)
+                st.plotly_chart(fig_pareto, use_container_width=True, key="chart_pareto_frontier")
                 
                 st.info("💡 Each point is a Pareto-optimal solution. Pick based on your priority!")
                 
@@ -665,7 +665,7 @@ with tab5:
                 height=400
             )
             
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="chart_scenario_impact")
     
     else:  # Sensitivity Analysis
         st.subheader("Sensitivity Analysis")
@@ -685,7 +685,7 @@ with tab5:
             )
             
             fig_tornado = plot_tornado_chart(sensitivities, 0)
-            st.plotly_chart(fig_tornado, use_container_width=True)
+            st.plotly_chart(fig_tornado, use_container_width=True, key="chart_sensitivity_tornado")
             
             st.info(f"💡 **Insight**: Shows impact of ±{perturbation:.0%} change in each channel's budget")
 
@@ -722,7 +722,7 @@ with tab6:
             height=400
         )
         
-        st.plotly_chart(fig_resid, use_container_width=True)
+        st.plotly_chart(fig_resid, use_container_width=True, key="chart_residuals")
     
     with col2:
         st.subheader("Feature Importance")
@@ -732,7 +732,7 @@ with tab6:
         importance = {ch: abs(coeffs[i]) for i, ch in enumerate(channels)}
         
         fig_importance = plot_coefficient_importance(importance)
-        st.plotly_chart(fig_importance, use_container_width=True)
+        st.plotly_chart(fig_importance, use_container_width=True, key="chart_feature_importance")
     
     st.markdown("---")
     
