@@ -1,390 +1,425 @@
-# 🚀 Marketing Analytics Portfolio - Enterprise Edition
+# 📊 Marketing Analytics Portfolio
 
-> **World-Class Marketing Analytics Platform** with 8 enterprise-grade modules comparable to tools costing $50,000-$150,000/year.
-
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red.svg)](https://streamlit.io/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-**Total Value:** Rp 2.05B - 4.1B | **8,000+ Lines of Code** | **49 Tabs** | **70+ Features**
+**Enterprise-Grade Marketing Analytics Platform** built with Streamlit, featuring advanced MMM, AI-powered insights, and comprehensive web analytics.
 
 ---
 
-## 📊 7 Enterprise Modules
+## 🚀 Features Overview
 
-### 1. 🎯 Customer Segmentation (800+ lines)
-**Advanced clustering and customer analytics**
+### 📈 **Module 1-7: Core Marketing Analytics**
+- Customer Segmentation (RFM Analysis)
+- Market Basket Analysis
+- Churn Prediction
+- Sentiment Analysis
+- Campaign Performance Tracking
+- A/B Testing Framework
+- Competitive Analysis
 
-- **4 Clustering Algorithms:** K-Means, DBSCAN, Hierarchical, GMM
-- **RFM Analysis:** 8 customer segments with behavioral insights
-- **CLV Prediction:** Historical and predictive lifetime value
-- **Churn Modeling:** Risk scoring and prevention strategies
-- **Cohort Retention:** Heatmap analysis and trends
-- **Automated Action Plans:** Budget allocation and targeting
+### 🎯 **Module 8: Advanced Marketing Mix Modeling (MMM)**
+Enterprise-grade MMM with:
+- **Bayesian Hierarchical Modeling** (PyMC)
+- **Multi-objective Optimization** (Pymoo)
+- **SHAP Explainability**
+- **Prophet Seasonality** decomposition
+- **Saturation & Adstock** effects
+- **Budget Allocation** optimizer
+- **What-If Scenarios**
 
-**Value:** Rp 500M - 1B | **Comparable to:** Salesforce Einstein Analytics
+### 👥 **Module 9: Cohort Analysis**
+- Retention heatmaps
+- User lifecycle tracking
+- Engagement metrics
+- Altair visualizations
+
+### 📄 **Module 10: Executive Report Generator**
+- PDF report generation (fpdf2)
+- Automated insights
+- KPI summaries
+- Visual dashboards
+
+### 🎯 **Module 11: MMM Optimizer**
+- Advanced saturation curves
+- Adstock modeling
+- Budget optimization
+- ROI maximization
+
+### 🤖 **Module 12: Product Recommender**
+- Collaborative filtering
+- User similarity matrix
+- Interactive Altair heatmaps
+- Personalized recommendations
+
+### 📊 **Module 13: Web Analytics Dashboard**
+**Google Analytics-Style** comprehensive analytics:
+- **5 Main Tabs:**
+  - 📈 Overview - Real-time metrics & trends
+  - 👥 Audience - Demographics & behavior
+  - 🔍 Acquisition - Traffic sources
+  - 🎯 Behavior - User engagement
+  - 💰 Conversions - Goal tracking
+
+- **Data Input Options:**
+  - 🤖 AI-Generated (synthetic data)
+  - ✍️ Manual Input (customizable metrics)
+  - 📤 CSV Upload (real data)
+
+- **Configurable Metrics:**
+  - Sessions, Users, Pageviews
+  - Avg Duration, Bounce Rate
+  - Conversion Rate & Value
+  - Revenue tracking
+
+### 🚀 **Module 14: Advanced Analytics Dashboard**
+**Enterprise-Grade GA4 Style** with AI insights:
+
+#### **7 Professional Tabs:**
+
+1. **📈 Real-Time Analytics**
+   - Active users (last hour)
+   - Pageviews per minute
+   - Live traffic visualization
+   - Top active pages
+   - Real-time revenue
+
+2. **🎯 User Journey & Behavior Flow**
+   - Landing page performance
+   - Conversion by page
+   - Engagement distribution (Low/Medium/High/Very High)
+   - Session duration analysis
+
+3. **🔄 Funnel Analysis**
+   - 4-stage conversion funnel
+   - Drop-off rate calculation
+   - Time to conversion
+   - Funnel visualization
+
+4. **👥 Cohort Retention**
+   - Retention heatmap (14 days)
+   - Average retention curve
+   - User behavior tracking
+   - Cohort comparison
+
+5. **💰 Revenue & E-commerce Analytics**
+   - Total revenue, orders, AOV
+   - Revenue per session
+   - Revenue by source & country
+   - Revenue trend analysis
+
+6. **🤖 AI-Powered Insights**
+   - 7-day traffic forecast
+   - Predictive analytics
+   - Automated insights:
+     - Best performing sources
+     - Peak traffic hours
+     - High-value user identification
+     - Mobile traffic trends
+
+7. **📊 Custom Reports**
+   - Build custom reports
+   - Select metrics & dimensions
+   - CSV export
+   - Formatted data tables
+
+#### **Advanced Features:**
+- ✅ Period comparison (vs previous period)
+- ✅ Advanced segmentation filters
+- ✅ Traffic source filtering
+- ✅ Gradient UI with professional styling
+- ✅ Engagement scoring (0-100)
+- ✅ Event tracking
+- ✅ Revenue analytics
+- ✅ Predictive forecasting
 
 ---
 
-### 2. 📈 Market Demand Forecasting (600+ lines)
-**Enterprise time series analytics**
+## 🛠️ Technology Stack
 
-- **5 Forecasting Methods:** Prophet, ARIMA, Exponential Smoothing, Moving Average, Linear Trend
-- **Seasonality Analysis:** STL decomposition and trend identification
-- **Inventory Optimization:** Safety Stock, Reorder Point, EOQ calculations
-- **Demand Drivers:** Multi-factor analysis
-- **Monte Carlo Simulation:** Uncertainty modeling
-- **Editable AOV:** Dynamic revenue calculations
+### **Core Framework**
+- **Streamlit** - Interactive web applications
+- **Python 3.13** - Latest Python features
 
-**Value:** Rp 250M - 500M | **Comparable to:** SAP Integrated Business Planning
+### **Data Science & ML**
+- **pandas** - Data manipulation
+- **numpy** - Numerical computing
+- **scikit-learn** - Machine learning
+- **lifetimes** - CLV prediction
 
----
+### **Visualization**
+- **Altair** - Interactive charts (primary)
+- **Plotly** - 3D visualizations
+- **matplotlib** - Statistical plots
 
-### 3. 💬 Social Media Sentiment Analysis (700+ lines)
-**Advanced NLP and sentiment intelligence**
+### **Advanced Analytics**
+- **PyMC** - Bayesian modeling
+- **Arviz** - Bayesian visualization
+- **Pymoo** - Multi-objective optimization
+- **SHAP** - Model explainability
+- **Prophet** - Time series forecasting
 
-- **Multi-Level Sentiment:** Polarity, subjectivity, intensity (5 levels)
-- **6 Emotion Detection:** Joy, Anger, Sadness, Fear, Surprise, Disgust
-- **Topic Modeling:** LDA-based topic extraction
-- **Aspect-Based Analysis:** Product, Price, Service, Delivery sentiment
-- **Competitive Comparison:** Multi-brand benchmarking
-- **Crisis Detection:** Automated alerts and response prioritization
-
-**Value:** Rp 150M - 300M | **Comparable to:** Brandwatch Consumer Intelligence
-
----
-
-### 4. 🔻 Marketing Funnel Performance (700+ lines)
-**Conversion analytics with full editability**
-
-- **Multi-Channel Funnels:** 5 channels with side-by-side comparison
-- **Cohort Analysis:** Monthly trends with add/edit capabilities
-- **5 Attribution Models:** First-touch, Last-touch, Linear, Time-decay, Position-based
-- **Trend Analysis:** 30-day timeline synced with actual data
-- **Optimization Tools:** ROI calculator and impact analysis
-- **✨ FULLY EDITABLE:** All data customizable in real-time
-
-**Value:** Rp 200M - 400M | **Comparable to:** Google Analytics 4 Funnels
+### **Utilities**
+- **fpdf2** - PDF generation
+- **joblib** - Model persistence
 
 ---
 
-### 5. 🧪 A/B Testing Simulator (850+ lines)
-**Statistical experimentation platform**
+## 📦 Installation
 
-- **Multiple Tests:** Z-Test, T-Test, Chi-Square, Mann-Whitney, ANOVA
-- **Sample Size Calculator:** Power analysis and duration estimation
-- **Sequential Testing:** O'Brien-Fleming boundaries with early stopping
-- **Bayesian Analysis:** Posterior distributions and credible intervals
-- **Multi-Variant Testing:** A/B/C/D/E with Bonferroni correction
-- **Experiment Tracking:** History log and comparison
-
-**Value:** Rp 150M - 300M | **Comparable to:** Optimizely Experimentation
-
----
-
-### 6. ⚖️ Competitive Market Analysis (750+ lines)
-**MBA-level economic modeling**
-
-- **Advanced Elasticity:** Own-price, cross-price, income elasticity
-- **Game Theory:** Nash equilibrium, Bertrand competition, payoff matrices
-- **Porter's Five Forces:** Industry attractiveness with radar visualization
-- **Competitive Positioning:** Editable price vs quality maps
-- **Market Structure:** HHI, CR4, Lerner Index analysis
-- **SWOT Framework:** Strategic quadrants and recommendations
-
-**Value:** Rp 150M - 300M | **Comparable to:** McKinsey Strategy Tools
-
----
-
-### 7. ⚔️ Channel Effectiveness Analysis (700+ lines)
-**Multi-channel ROI optimization**
-
-- **5 Channel Types:** Social, Search, Email, Field Officers, Events
-- **ROI Analysis:** LTV:CAC ratios, payback period calculations
-- **Efficiency Metrics:** CPL, CPA, conversion rates (editable)
-- **Multi-Touch Attribution:** 5 attribution models
-- **Budget Optimization:** ROI-based allocation recommendations
-- **Scenario Planning:** What-if analysis and simulations
-
-**Value:** Rp 150M - 300M | **Comparable to:** HubSpot Marketing Analytics
-
----
-
-### 8. 🎛️ Advanced Marketing Mix Modeling (2,900+ lines) ⭐ **NEW!**
-**Enterprise-grade MMM with multi-objective optimization**
-
-- **4 Adstock Types:** Geometric, Weibull (delayed peak), Delayed, Carryover
-- **3 Saturation Models:** Hill (S-curve), Logistic, Michaelis-Menten with auto-fitting
-- **Multi-Objective Optimization:** Pareto frontier (Sales vs ROI vs Efficiency)
-- **Contribution Decomposition:** Baseline, Seasonality, Trend, Media waterfall charts
-- **ROAS Analysis:** Standard ROAS, Incremental ROAS (iROAS), Marginal ROAS
-- **Scenario Planning:** What-if simulator with sensitivity tornado charts
-- **Advanced Constraints:** Min/max spend, percentage limits per channel
-- **6-Tab Interface:** Model Results, Adstock/Saturation, Contribution, Optimizer, Scenarios, Analytics
-
-**Value:** Rp 500M - 1B | **Comparable to:** Google Meridian, Meta Robyn, Uber Orbit
-
-**Key Differentiators:**
-- ✅ Multiple adstock types (not just geometric like most tools)
-- ✅ Auto-fitting saturation parameters (no manual tuning)
-- ✅ Multi-objective Pareto optimization (unique feature)
-- ✅ Comprehensive ROAS metrics (standard + incremental + marginal)
-- ✅ Built-in scenario planning and sensitivity analysis
-
----
-
-## 🚀 Quick Start
-
-### Installation
-
+### **1. Clone Repository**
 ```bash
-# Clone repository
 git clone https://github.com/yandri918/marketing.git
 cd marketing
+```
 
-# Install dependencies
+### **2. Install Dependencies**
+```bash
 pip install -r requirements.txt
+```
 
-# Run application
+### **3. Run Application**
+```bash
 streamlit run Home.py
 ```
 
-### Requirements
+---
+
+## 📋 Requirements
 
 ```txt
-streamlit>=1.28.0
-pandas>=2.0.0
+# Core
+streamlit>=1.31.0
+pandas>=2.1.0
 numpy>=1.24.0
-plotly>=5.14.0
-scikit-learn>=1.3.0
-scipy>=1.11.0
-statsmodels>=0.14.0
-textblob>=0.17.1
-nltk>=3.8.1
-prophet>=1.1.4
+plotly>=5.18.0
 
-# Advanced MMM (Optional)
-pymc>=5.10.0          # Bayesian modeling (Phase 2)
-arviz>=0.17.0         # Bayesian diagnostics
-pymoo>=0.6.1          # Multi-objective optimization
-optuna>=3.5.0         # Hyperparameter tuning
-shap>=0.44.0          # Explainability (Phase 4)
+# Machine Learning
+scikit-learn>=1.4.0
+scipy>=1.12.0
+
+# Bayesian Modeling
+pymc>=5.10.0
+arviz>=0.17.0
+pytensor>=2.18.0
+
+# Optimization
+pymoo>=0.6.1.1
+optuna>=3.5.0
+
+# Explainability
+shap>=0.44.0
+
+# Time Series
+prophet>=1.1.5
+
+# Utilities
+joblib>=1.3.0
+altair>=5.0.0
+lifetimes>=0.11.0
+fpdf2>=2.7.0
+matplotlib>=3.7.0
 ```
 
 ---
 
-## 📖 Usage
+## 🎯 Use Cases
 
-### Customer Segmentation
-```python
-# Navigate to Customer Segmentation module
-# Select clustering algorithm (K-Means, DBSCAN, etc.)
-# View RFM segments and CLV predictions
-# Export action plans
-```
+### **For Marketing Teams**
+- Optimize marketing budget allocation
+- Identify high-value customer segments
+- Track campaign performance
+- Predict customer churn
+- Analyze customer lifetime value
 
-### Marketing Funnel (Editable)
-```python
-# Go to Marketing Funnel module
-# Edit funnel stages, user counts, AOV
-# Modify channel performance metrics
-# Add/edit cohort data
-# Customize attribution touchpoints
-# All charts update in real-time
-```
+### **For Data Scientists**
+- Advanced MMM with Bayesian inference
+- Multi-objective optimization
+- SHAP-based model interpretation
+- Time series forecasting
+- A/B testing analysis
 
-### A/B Testing
-```python
-# Input test data (Control vs Variant)
-# Select statistical test method
-# Calculate sample size requirements
-# Run Bayesian or Sequential analysis
-# Save experiment to history
-```
+### **For Business Analysts**
+- Executive dashboards
+- KPI tracking
+- Cohort analysis
+- Revenue analytics
+- Funnel optimization
 
----
-
-## 🎯 Key Features
-
-### Advanced Analytics
-- ✅ 18+ ML/Statistical algorithms
-- ✅ 120+ interactive visualizations
-- ✅ Real-time data processing
-- ✅ Multi-dimensional analysis
-
-### Editability
-- ✅ Funnel data (stages, counts, AOV)
-- ✅ Channel metrics (spend, leads, customers)
-- ✅ Cohort performance (all stages)
-- ✅ Attribution touchpoints
-- ✅ Efficiency comparison data
-
-### Business Intelligence
-- ✅ Automated insights
-- ✅ Strategic recommendations
-- ✅ ROI optimization
-- ✅ Scenario planning
+### **For Product Managers**
+- User behavior analysis
+- Feature adoption tracking
+- Conversion optimization
+- Retention analysis
+- Product recommendations
 
 ---
 
-## 📊 Technical Stack
+## 📊 Key Metrics Tracked
 
-- **Frontend:** Streamlit
-- **Data Processing:** Pandas, NumPy
-- **Visualization:** Plotly, Plotly Express
-- **ML/Stats:** Scikit-learn, SciPy, Statsmodels
-- **NLP:** NLTK, TextBlob
-- **Forecasting:** Prophet
+### **Acquisition Metrics**
+- Traffic sources
+- Campaign performance
+- Cost per acquisition (CPA)
+- Return on ad spend (ROAS)
 
----
+### **Engagement Metrics**
+- Session duration
+- Pages per session
+- Bounce rate
+- Engagement score (0-100)
 
-## 🏆 Value Proposition
+### **Retention Metrics**
+- Cohort retention rates
+- Churn prediction
+- Customer lifetime value (CLV)
+- Repeat purchase rate
 
-| Metric | Value |
-|--------|-------|
-| **Total Lines of Code** | 8,000+ |
-| **Number of Modules** | 8 |
-| **Number of Tabs** | 49 |
-| **Advanced Features** | 70+ |
-| **Visualizations** | 140+ |
-| **ML Algorithms** | 20+ |
-| **Market Value** | Rp 2.05B - 4.1B |
-
-**ROI:** 5-10x value increase from basic to enterprise-grade
-
----
-
-## 📝 Module Comparison
-
-| Module | Lines | Tabs | Features | Value |
-|--------|-------|------|----------|-------|
-| Customer Segmentation | 800+ | 7 | 10 | Rp 500M-1B |
-| Market Forecasting | 600+ | 6 | 8 | Rp 250M-500M |
-| Sentiment Analysis | 700+ | 6 | 8 | Rp 150M-300M |
-| Marketing Funnel | 700+ | 6 | 8 | Rp 200M-400M |
-| A/B Testing | 850+ | 6 | 8 | Rp 150M-300M |
-| Competitive Analysis | 750+ | 6 | 8 | Rp 150M-300M |
-| Channel Effectiveness | 700+ | 6 | 6 | Rp 150M-300M |
-| **Advanced MMM** ⭐ | **2,900+** | **6** | **14** | **Rp 500M-1B** |
-
----
-
-## 🎓 Use Cases
-
-### Marketing Teams
-- Customer segmentation and targeting
-- Campaign performance optimization
-- A/B test validation
-- Channel mix optimization
-
-### Data Scientists
-- Predictive analytics
-- Statistical modeling
-- Machine learning applications
-- Experiment design
-
-### Business Strategists
-- Competitive analysis
-- Market positioning
-- ROI optimization
-- Strategic planning
-
-### Executives
-- KPI dashboards
-- Performance monitoring
-- Budget allocation
-- Strategic insights
+### **Revenue Metrics**
+- Total revenue
+- Average order value (AOV)
+- Revenue per session
+- Conversion rate
+- Revenue by source/country
 
 ---
 
 ## 🔧 Configuration
 
-### Environment Variables
-```bash
-# Optional: Set custom configurations
-STREAMLIT_THEME=light
-STREAMLIT_SERVER_PORT=8501
-```
+### **Data Input Modes**
 
-### Data Sources
-- Synthetic data generators included
-- CSV import capabilities
-- API integration ready
-- Real-time data support
+#### **1. AI-Generated (Default)**
+- Realistic synthetic data
+- Configurable parameters
+- Instant visualization
+
+#### **2. Manual Input**
+- Custom metric values
+- Session, user, pageview counts
+- Conversion & revenue settings
+
+#### **3. CSV Upload**
+Required columns:
+```csv
+timestamp,source,device,pageviews,duration,bounce,conversion,revenue
+```
 
 ---
 
-## 📚 Documentation
+## 🎨 UI/UX Features
 
-### Module Guides
-- [Customer Segmentation Guide](docs/customer_segmentation.md)
-- [Forecasting Guide](docs/forecasting.md)
-- [Sentiment Analysis Guide](docs/sentiment.md)
-- [Funnel Analytics Guide](docs/funnel.md)
-- [A/B Testing Guide](docs/ab_testing.md)
-- [Competitive Analysis Guide](docs/competitive.md)
-- [Channel Effectiveness Guide](docs/channel.md)
+### **Professional Design**
+- Gradient backgrounds
+- Custom CSS styling
+- Responsive layouts
+- Interactive tooltips
 
-### API Reference
-- [Data Models](docs/api/models.md)
-- [Utility Functions](docs/api/utils.md)
-- [Visualization Library](docs/api/viz.md)
+### **Data Visualization**
+- Altair interactive charts
+- Plotly 3D visualizations
+- Heatmaps & matrices
+- Trend lines & forecasts
+
+### **User Experience**
+- Period comparison
+- Advanced filters
+- Segment selection
+- Export capabilities
+
+---
+
+## 📈 Analytics Capabilities
+
+### **Descriptive Analytics**
+- What happened? (Historical data)
+- KPI dashboards
+- Trend analysis
+
+### **Diagnostic Analytics**
+- Why did it happen? (Root cause)
+- Cohort analysis
+- Funnel analysis
+
+### **Predictive Analytics**
+- What will happen? (Forecasting)
+- 7-day traffic forecast
+- Churn prediction
+- CLV prediction
+
+### **Prescriptive Analytics**
+- What should we do? (Optimization)
+- Budget allocation
+- Campaign optimization
+- A/B test recommendations
+
+---
+
+## 🚀 Deployment
+
+### **Streamlit Cloud**
+1. Push to GitHub: `yandri918/marketing`
+2. Connect to Streamlit Cloud
+3. Deploy from `main` branch
+4. Set main file: `Home.py`
+
+### **Local Development**
+```bash
+streamlit run Home.py --server.port 8501
+```
+
+---
+
+## 📝 Version History
+
+### **v2.0** (Current)
+- ✅ Advanced Analytics Dashboard (GA4 style)
+- ✅ AI-powered insights & forecasting
+- ✅ Cohort retention analysis
+- ✅ Revenue analytics
+- ✅ Custom report builder
+
+### **v1.5**
+- ✅ Web Analytics Dashboard
+- ✅ Manual input & CSV upload
+- ✅ Dynamic conversion metrics
+- ✅ Altair visualizations
+
+### **v1.0**
+- ✅ Advanced MMM with Bayesian modeling
+- ✅ Product recommender system
+- ✅ Executive report generator
+- ✅ Core marketing analytics
 
 ---
 
 ## 🤝 Contributing
 
-Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+This is a portfolio project showcasing enterprise-grade marketing analytics capabilities.
 
-### Development Setup
-```bash
-# Install dev dependencies
-pip install -r requirements-dev.txt
+---
 
-# Run tests
-pytest tests/
+## 📧 Contact
 
-# Format code
-black .
-```
+**Developer**: Yandri
+**Repository**: [github.com/yandri918/marketing](https://github.com/yandri918/marketing)
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+This project is part of a professional portfolio demonstrating advanced data science and marketing analytics capabilities.
 
 ---
 
-## 🌟 Acknowledgments
+## 🎓 Skills Demonstrated
 
-Built with:
-- Streamlit for rapid app development
-- Plotly for interactive visualizations
-- Scikit-learn for machine learning
-- Prophet for time series forecasting
-
----
-
-## 📞 Support
-
-- **Issues:** [GitHub Issues](https://github.com/yandri918/marketing/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/yandri918/marketing/discussions)
-- **Email:** support@example.com
+- ✅ **Advanced Python** - OOP, async, type hints
+- ✅ **Data Science** - pandas, numpy, scikit-learn
+- ✅ **Machine Learning** - Bayesian models, optimization
+- ✅ **Visualization** - Altair, Plotly, interactive charts
+- ✅ **Web Development** - Streamlit, responsive UI
+- ✅ **Analytics** - Descriptive, diagnostic, predictive, prescriptive
+- ✅ **Marketing** - MMM, attribution, optimization
+- ✅ **Statistics** - Bayesian inference, A/B testing
+- ✅ **Product** - User analytics, funnel optimization
 
 ---
 
-## 🎉 Status
-
-✅ **Production Ready**
-✅ **Fully Tested**
-✅ **Enterprise Grade**
-✅ **Actively Maintained**
-
-**Last Updated:** January 2026
-
----
-
-**⭐ Star this repo if you find it useful!**
-
-**Built with ❤️ for data-driven marketers**
+**Built with ❤️ using Streamlit, Altair, and Python**
