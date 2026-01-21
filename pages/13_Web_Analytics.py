@@ -24,6 +24,8 @@ default_users = 90
 default_pageviews = 114103
 default_duration = 180
 default_bounce_rate = 0.144
+default_conversion_rate = 0.0521
+default_conversion_value = 500000
 
 if data_mode == "Manual Input":
     st.sidebar.subheader("📊 Set Your Metrics")
@@ -63,6 +65,25 @@ if data_mode == "Manual Input":
         value=default_bounce_rate * 100,
         step=0.1
     ) / 100
+    
+    st.sidebar.divider()
+    st.sidebar.subheader("💰 Conversion Settings")
+    
+    manual_conversion_rate = st.sidebar.slider(
+        "Conversion Rate (%)",
+        min_value=0.0,
+        max_value=100.0,
+        value=default_conversion_rate * 100,
+        step=0.1
+    ) / 100
+    
+    manual_conversion_value = st.sidebar.number_input(
+        "Value per Conversion (Rp)",
+        min_value=0,
+        value=default_conversion_value,
+        step=10000,
+        format="%d"
+    )
 
 st.sidebar.divider()
 st.sidebar.header("📅 Date Range")
@@ -78,7 +99,8 @@ selected_days = days_map[date_range]
 # ========== DATA GENERATION ==========
 @st.cache_data
 def generate_analytics_data(days=30, sessions_target=None, users_target=None, 
-                           pageviews_target=None, duration_target=None, bounce_target=None):
+                           pageviews_target=None, duration_target=None, bounce_target=None,
+                           conversion_rate=0.05):
     """Generate realistic web analytics data"""
     np.random.seed(42)
     
@@ -131,7 +153,7 @@ def generate_analytics_data(days=30, sessions_target=None, users_target=None,
             else:
                 bounce = 1 if pageviews == 1 else 0
             
-            conversion = 1 if np.random.random() < 0.05 else 0
+            conversion = 1 if np.random.random() < conversion_rate else 0
             
             data.append({
                 'timestamp': date,
@@ -157,8 +179,10 @@ if data_mode == "Manual Input":
         users_target=manual_users,
         pageviews_target=manual_pageviews,
         duration_target=manual_duration,
-        bounce_target=manual_bounce_rate
+        bounce_target=manual_bounce_rate,
+        conversion_rate=manual_conversion_rate
     )
+    conversion_value = manual_conversion_value
 elif data_mode == "Upload CSV":
     uploaded_file = st.sidebar.file_uploader(
         "Upload Analytics CSV",
@@ -173,12 +197,15 @@ elif data_mode == "Upload CSV":
             df['date'] = df['timestamp'].dt.date
             df['hour'] = df['timestamp'].dt.hour
             st.sidebar.success(f"✅ Loaded {len(df)} sessions")
+            conversion_value = default_conversion_value
         except Exception as e:
             st.sidebar.error(f"Error: {e}")
-            df = generate_analytics_data(days=selected_days)
+            df = generate_analytics_data(days=selected_days, conversion_rate=default_conversion_rate)
+            conversion_value = default_conversion_value
     else:
         st.sidebar.info("👆 Upload a CSV file to use real data")
-        df = generate_analytics_data(days=selected_days)
+        df = generate_analytics_data(days=selected_days, conversion_rate=default_conversion_rate)
+        conversion_value = default_conversion_value
 else:
     # Synthetic data with defaults
     df = generate_analytics_data(
@@ -187,8 +214,10 @@ else:
         users_target=default_users,
         pageviews_target=default_pageviews,
         duration_target=default_duration,
-        bounce_target=default_bounce_rate
+        bounce_target=default_bounce_rate,
+        conversion_rate=default_conversion_rate
     )
+    conversion_value = default_conversion_value
 
 # Filter data
 cutoff_date = df['date'].max() - timedelta(days=selected_days)
@@ -484,7 +513,7 @@ with tab5:
     col1, col2, col3 = st.columns(3)
     col1.metric("Total Conversions", f"{total_conversions:,}")
     col2.metric("Conversion Rate", f"{conversion_rate:.2%}")
-    col3.metric("Value per Conversion", "Rp 500,000")
+    col3.metric("Value per Conversion", f"Rp {conversion_value:,}")
     
     st.divider()
     
