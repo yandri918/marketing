@@ -453,8 +453,9 @@ with tab4:
     st.info("💡 **Cohort Analysis**: Track how user groups behave over time based on their first visit date")
     
     # Create cohorts based on first visit
-    df_filtered['cohort'] = df_filtered.groupby('user_id')['date'].transform('min')
-    df_filtered['days_since_first'] = (df_filtered['date'] - df_filtered['cohort']).dt.days
+    df_filtered['cohort'] = pd.to_datetime(df_filtered.groupby('user_id')['date'].transform('min'))
+    df_filtered['date_dt'] = pd.to_datetime(df_filtered['date'])
+    df_filtered['days_since_first'] = (df_filtered['date_dt'] - df_filtered['cohort']).dt.days
     
     # Cohort retention matrix
     cohort_data = df_filtered.groupby(['cohort', 'days_since_first'])['user_id'].nunique().reset_index()
