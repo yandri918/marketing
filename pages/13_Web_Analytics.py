@@ -9,9 +9,76 @@ st.set_page_config(page_title="Web Analytics | Google Analytics Style", page_ico
 st.title("📊 Web Analytics Dashboard")
 st.markdown("**Google Analytics-Style** comprehensive web analytics with real-time insights")
 
+# ========== SIDEBAR CONFIGURATION ==========
+st.sidebar.header("⚙️ Data Configuration")
+
+data_mode = st.sidebar.radio(
+    "Data Source",
+    ["Synthetic Data (Auto)", "Manual Input", "Upload CSV"],
+    help="Choose how to input your analytics data"
+)
+
+# Default values
+default_sessions = 28337
+default_users = 90
+default_pageviews = 114103
+default_duration = 180
+default_bounce_rate = 0.144
+
+if data_mode == "Manual Input":
+    st.sidebar.subheader("📊 Set Your Metrics")
+    
+    manual_sessions = st.sidebar.number_input(
+        "Total Sessions",
+        min_value=0,
+        value=default_sessions,
+        step=100
+    )
+    
+    manual_users = st.sidebar.number_input(
+        "Total Users",
+        min_value=0,
+        value=default_users,
+        step=10
+    )
+    
+    manual_pageviews = st.sidebar.number_input(
+        "Total Pageviews",
+        min_value=0,
+        value=default_pageviews,
+        step=100
+    )
+    
+    manual_duration = st.sidebar.number_input(
+        "Avg Duration (seconds)",
+        min_value=0,
+        value=default_duration,
+        step=10
+    )
+    
+    manual_bounce_rate = st.sidebar.slider(
+        "Bounce Rate (%)",
+        min_value=0.0,
+        max_value=100.0,
+        value=default_bounce_rate * 100,
+        step=0.1
+    ) / 100
+
+st.sidebar.divider()
+st.sidebar.header("📅 Date Range")
+date_range = st.sidebar.selectbox(
+    "Select Period",
+    ["Last 7 Days", "Last 30 Days", "Last 90 Days"],
+    index=1
+)
+
+days_map = {"Last 7 Days": 7, "Last 30 Days": 30, "Last 90 Days": 90}
+selected_days = days_map[date_range]
+
 # ========== DATA GENERATION ==========
 @st.cache_data
-def generate_analytics_data(days=30):
+def generate_analytics_data(days=30, sessions_target=None, users_target=None, 
+                           pageviews_target=None, duration_target=None, bounce_target=None):
     """Generate realistic web analytics data"""
     np.random.seed(42)
     
@@ -25,6 +92,12 @@ def generate_analytics_data(days=30):
     devices = ['Desktop', 'Mobile', 'Tablet']
     countries = ['Indonesia', 'USA', 'Singapore', 'Malaysia', 'Thailand', 'Philippines']
     
+    # Calculate base multiplier if targets provided
+    if sessions_target:
+        base_multiplier = sessions_target / (len(dates) * 50)
+    else:
+        base_multiplier = 1.0
+    
     data = []
     for date in dates:
         # Hourly pattern (more traffic during business hours)
@@ -34,17 +107,30 @@ def generate_analytics_data(days=30):
         # Weekly pattern (less traffic on weekends)
         day_multiplier = 0.7 if date.weekday() >= 5 else 1.0
         
-        base_sessions = int(np.random.poisson(50) * hour_multiplier * day_multiplier)
+        base_sessions = int(np.random.poisson(50) * hour_multiplier * day_multiplier * base_multiplier)
         
         for _ in range(base_sessions):
             source = np.random.choice(sources, p=[0.35, 0.25, 0.15, 0.12, 0.08, 0.05])
             device = np.random.choice(devices, p=[0.5, 0.4, 0.1])
             country = np.random.choice(countries, p=[0.4, 0.2, 0.15, 0.1, 0.08, 0.07])
             
-            # Session metrics
-            pageviews = np.random.randint(1, 8)
-            duration = np.random.exponential(180)  # seconds
-            bounce = 1 if pageviews == 1 else 0
+            # Session metrics - adjust based on targets
+            if pageviews_target and sessions_target:
+                avg_pages = pageviews_target / sessions_target
+                pageviews = max(1, int(np.random.poisson(avg_pages)))
+            else:
+                pageviews = np.random.randint(1, 8)
+            
+            if duration_target:
+                duration = np.random.exponential(duration_target)
+            else:
+                duration = np.random.exponential(180)
+            
+            if bounce_target:
+                bounce = 1 if np.random.random() < bounce_target else 0
+            else:
+                bounce = 1 if pageviews == 1 else 0
+            
             conversion = 1 if np.random.random() < 0.05 else 0
             
             data.append({
@@ -63,19 +149,46 @@ def generate_analytics_data(days=30):
     
     return pd.DataFrame(data)
 
-# Generate data
-df = generate_analytics_data(days=30)
-
-# ========== SIDEBAR FILTERS ==========
-st.sidebar.header("📅 Date Range")
-date_range = st.sidebar.selectbox(
-    "Select Period",
-    ["Last 7 Days", "Last 30 Days", "Last 90 Days"],
-    index=1
-)
-
-days_map = {"Last 7 Days": 7, "Last 30 Days": 30, "Last 90 Days": 90}
-selected_days = days_map[date_range]
+# Generate or load data based on mode
+if data_mode == "Manual Input":
+    df = generate_analytics_data(
+        days=selected_days,
+        sessions_target=manual_sessions,
+        users_target=manual_users,
+        pageviews_target=manual_pageviews,
+        duration_target=manual_duration,
+        bounce_target=manual_bounce_rate
+    )
+elif data_mode == "Upload CSV":
+    uploaded_file = st.sidebar.file_uploader(
+        "Upload Analytics CSV",
+        type=['csv'],
+        help="CSV must have columns: timestamp, source, device, pageviews, duration, bounce, conversion"
+    )
+    
+    if uploaded_file:
+        try:
+            df = pd.read_csv(uploaded_file)
+            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            df['date'] = df['timestamp'].dt.date
+            df['hour'] = df['timestamp'].dt.hour
+            st.sidebar.success(f"✅ Loaded {len(df)} sessions")
+        except Exception as e:
+            st.sidebar.error(f"Error: {e}")
+            df = generate_analytics_data(days=selected_days)
+    else:
+        st.sidebar.info("👆 Upload a CSV file to use real data")
+        df = generate_analytics_data(days=selected_days)
+else:
+    # Synthetic data with defaults
+    df = generate_analytics_data(
+        days=selected_days,
+        sessions_target=default_sessions,
+        users_target=default_users,
+        pageviews_target=default_pageviews,
+        duration_target=default_duration,
+        bounce_target=default_bounce_rate
+    )
 
 # Filter data
 cutoff_date = df['date'].max() - timedelta(days=selected_days)
