@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+import altair as alt
 import plotly.express as px
 import sys
 import os
@@ -97,29 +96,67 @@ option = st.selectbox("Select Metric to Visualize", ["Retention Rate (%)", "Acti
 if option == "Retention Rate (%)":
     st.subheader("🔥 User Retention Heatmap")
     
-    fig, ax = plt.subplots(figsize=(12, 8))
+    # Convert to long format for Altair
+    retention_long = retention.reset_index().melt(
+        id_vars='CohortMonth',
+        var_name='CohortIndex',
+        value_name='Retention'
+    )
+    retention_long['CohortMonth'] = retention_long['CohortMonth'].dt.strftime('%Y-%m')
+    retention_long['Retention'] = retention_long['Retention'].fillna(0)
     
-    # Format Cohort Month index for readability
-    yticklabels = [x.strftime('%Y-%m') for x in retention.index]
+    # Create Altair heatmap
+    heatmap = alt.Chart(retention_long).mark_rect().encode(
+        x=alt.X('CohortIndex:O', title='Months Since First Purchase'),
+        y=alt.Y('CohortMonth:N', title='Cohort Month'),
+        color=alt.Color('Retention:Q',
+                      scale=alt.Scale(scheme='yellowgreenblue', domain=[0, 0.5]),
+                      title='Retention Rate'),
+        tooltip=[
+            alt.Tooltip('CohortMonth:N', title='Cohort'),
+            alt.Tooltip('CohortIndex:O', title='Month'),
+            alt.Tooltip('Retention:Q', title='Retention', format='.1%')
+        ]
+    ).properties(
+        width=700,
+        height=400,
+        title='Cohort Analysis - Retention Rate'
+    )
     
-    sns.heatmap(retention, annot=True, fmt='.0%', cmap='YlGnBu', vmin=0.0, vmax=0.5, ax=ax, yticklabels=yticklabels)
-    ax.set_title('Cohort Analysis - Retention Rate')
-    ax.set_ylabel('Cohort Month')
-    ax.set_xlabel('Months Since First Purchase')
-    
-    st.pyplot(fig)
+    st.altair_chart(heatmap, use_container_width=True)
     
     st.info("**Insight:** Darker blue cells indicate higher retention. Look for vertical consistency (product health) or horizontal improvements (better onboarding).")
 
 elif option == "Active Users (Count)":
     st.subheader("👥 Active Users Heatmap")
     
-    fig, ax = plt.subplots(figsize=(12, 8))
-    yticklabels = [x.strftime('%Y-%m') for x in cohort_counts.index]
+    # Convert to long format for Altair
+    counts_long = cohort_counts.reset_index().melt(
+        id_vars='CohortMonth',
+        var_name='CohortIndex',
+        value_name='Users'
+    )
+    counts_long['CohortMonth'] = counts_long['CohortMonth'].dt.strftime('%Y-%m')
+    counts_long['Users'] = counts_long['Users'].fillna(0)
     
-    sns.heatmap(cohort_counts, annot=True, fmt='.0f', cmap='Blues', ax=ax, yticklabels=yticklabels)
-    ax.set_title('Cohort Analysis - Active Users Count')
-    st.pyplot(fig)
+    heatmap = alt.Chart(counts_long).mark_rect().encode(
+        x=alt.X('CohortIndex:O', title='Months Since First Purchase'),
+        y=alt.Y('CohortMonth:N', title='Cohort Month'),
+        color=alt.Color('Users:Q',
+                      scale=alt.Scale(scheme='blues'),
+                      title='Active Users'),
+        tooltip=[
+            alt.Tooltip('CohortMonth:N', title='Cohort'),
+            alt.Tooltip('CohortIndex:O', title='Month'),
+            alt.Tooltip('Users:Q', title='Users', format='.0f')
+        ]
+    ).properties(
+        width=700,
+        height=400,
+        title='Cohort Analysis - Active Users Count'
+    )
+    
+    st.altair_chart(heatmap, use_container_width=True)
 
 # Cohort Details
 st.divider()

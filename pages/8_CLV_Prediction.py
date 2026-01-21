@@ -4,8 +4,17 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-from lifetimes import BetaGeoFitter, GammaGammaFitter
-from lifetimes.plotting import plot_frequency_recency_matrix, plot_probability_alive_matrix
+
+# Try to import lifetimes, gracefully handle if not installed
+try:
+    from lifetimes import BetaGeoFitter, GammaGammaFitter
+    from lifetimes.plotting import plot_frequency_recency_matrix, plot_probability_alive_matrix
+    LIFETIMES_AVAILABLE = True
+except ImportError:
+    LIFETIMES_AVAILABLE = False
+    st.error("⚠️ **CLV Prediction Unavailable**: The `lifetimes` library is not installed. Please contact the administrator to add it to requirements.txt")
+    st.info("💡 The platform is rebuilding with updated dependencies. Please refresh in a few minutes.")
+    st.stop()
 
 st.set_page_config(page_title="CLV Prediction | AI Analytics", page_icon="🔮", layout="wide")
 

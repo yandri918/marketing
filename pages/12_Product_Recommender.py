@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+import altair as alt
 from sklearn.metrics.pairwise import cosine_similarity
 
 st.set_page_config(page_title="AI Recommender System", page_icon="🛍️", layout="wide")
@@ -154,9 +153,37 @@ if df_matrix is not None:
 
     with tab2:
         st.caption("How close is User A to User B? (1.0 = Identical, 0.0 = Different)")
-        fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(df_similarity, cmap="RdBu_r", center=0, ax=ax)
-        st.pyplot(fig)
+        
+        # Convert similarity matrix to long format for Altair
+        similarity_long = df_similarity.reset_index().melt(
+            id_vars='index', 
+            var_name='User_B', 
+            value_name='Similarity'
+        )
+        similarity_long.rename(columns={'index': 'User_A'}, inplace=True)
+        
+        # Create Altair heatmap
+        heatmap = alt.Chart(similarity_long).mark_rect().encode(
+            x=alt.X('User_B:N', title='User B'),
+            y=alt.Y('User_A:N', title='User A'),
+            color=alt.Color('Similarity:Q', 
+                          scale=alt.Scale(scheme='redblue', domain=[0, 1], reverse=True),
+                          title='Similarity Score'),
+            tooltip=[
+                alt.Tooltip('User_A:N', title='User A'),
+                alt.Tooltip('User_B:N', title='User B'),
+                alt.Tooltip('Similarity:Q', title='Similarity', format='.2f')
+            ]
+        ).properties(
+            width=600,
+            height=600,
+            title='User Similarity Matrix'
+        ).configure_axis(
+            labelFontSize=10,
+            titleFontSize=12
+        )
+        
+        st.altair_chart(heatmap, use_container_width=True)
 
 else:
     st.info("👈 Please upload a CSV file or use synthetic data to begin.")

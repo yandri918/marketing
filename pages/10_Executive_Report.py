@@ -2,10 +2,19 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from fpdf import FPDF
 import tempfile
 import sys
 import os
+
+# Try to import FPDF, gracefully handle if not installed
+try:
+    from fpdf import FPDF
+    FPDF_AVAILABLE = True
+except ImportError:
+    FPDF_AVAILABLE = False
+    st.error("⚠️ **PDF Generation Unavailable**: The `fpdf2` library is not installed. Please contact the administrator to add it to requirements.txt")
+    st.info("💡 The platform is rebuilding with updated dependencies. Please refresh in a few minutes.")
+    st.stop()
 
 # Add parent directory to path to import utils
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))

@@ -293,18 +293,23 @@ with tab2:
         sat_configs = {}
         for ch in channels:
             adstock_col = f"{ch}_adstock"
-            if auto_fit_saturation:
-                # Extract from auto-fitted params (simplified)
-                median_spend = df_transformed[adstock_col].median()
-                sat_configs[ch] = {
-                    'type': saturation_type,
-                    'params': {'alpha': 1.0, 'gamma': median_spend}
-                }
+            median_spend = df_transformed[adstock_col].median()
+            
+            # Create params based on saturation type
+            if saturation_type == 'hill':
+                params = {'alpha': 1.0, 'gamma': median_spend}
+            elif saturation_type == 'logistic':
+                params = {'k': 0.01, 'x0': median_spend, 'L': 1.0}
+            elif saturation_type == 'michaelis_menten':
+                params = {'vmax': 1.0, 'km': median_spend}
             else:
-                sat_configs[ch] = {
-                    'type': saturation_type,
-                    'params': {'alpha': 1.0, 'gamma': df_transformed[adstock_col].median()}
-                }
+                # Default to hill
+                params = {'alpha': 1.0, 'gamma': median_spend}
+            
+            sat_configs[ch] = {
+                'type': saturation_type,
+                'params': params
+            }
         
         fig_sat = plot_saturation_curves(
             sat_configs,

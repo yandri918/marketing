@@ -1,0 +1,20 @@
+Marketing Module Deployment Version
+====================================
+Version: 2.0.0
+Date: 2026-01-21 20:20:00
+Commit: 52a4761
+
+Changes:
+- Removed all seaborn dependencies
+- Replaced with Altair for all visualizations
+- Updated requirements.txt with correct dependencies
+- Fixed all import errors
+
+Dependencies:
+- altair (for heatmaps and charts)
+- lifetimes (for CLV prediction)
+- scikit-learn (for ML models)
+- matplotlib (for lifetimes library support)
+- fpdf2 (for PDF generation)
+
+All pages should now work without seaborn!
