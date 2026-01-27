@@ -32,4 +32,8 @@ lifetimes>=0.11.0
 fpdf2>=2.7.0
 matplotlib>=3.7.0
 wordcloud>=1.9.0
+
+# Time Series Analysis
 statsmodels>=0.14.0
+
+# Last updated: 2026-01-27
