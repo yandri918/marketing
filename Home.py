@@ -15,6 +15,9 @@ st.markdown("""
     /* Import Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap');
     
+    /* Import Font Awesome */
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+    
     /* CSS Variables for Theming */
     :root {
         --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -254,6 +257,25 @@ st.markdown("""
         margin-right: 0.5rem;
     }
     
+    /* Icon Styling */
+    .fas, .far, .fab {
+        margin-right: 0.5rem;
+    }
+    
+    .project-icon i {
+        font-size: 2.5rem;
+        margin-right: 0;
+    }
+    
+    .section-title i {
+        margin-right: 0.75rem;
+    }
+    
+    .badge i {
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
     /* Project Cards */
     .project-card {
         background: white;
@@ -446,16 +468,16 @@ st.markdown("""
 st.markdown("""
 <div class="hero-container">
     <div class="hero-content">
-        <h1 class="hero-title">Hi, I'm Andriyanto, BScE, S.E. 👋</h1>
+        <h1 class="hero-title">Hi, I'm Andriyanto, BScE, S.E. <i class="fas fa-hand-wave" style="color: #fbbf24;"></i></h1>
         <p class="hero-subtitle">Marketing Analyst | Growth Engineer | Data Scientist</p>
         <p class="hero-description">
             I bridge the gap between <strong>Marketing Strategy</strong>, <strong>Economics</strong>, and <strong>Data Science</strong>. 
             I build tools that automate insights, predict market trends, and optimize conversion analytics using <strong>Python & Streamlit</strong>.
         </p>
         <div style="margin-top: 2rem;">
-            <span class="badge badge-green">📊 Automate Insights</span>
-            <span class="badge badge-blue">📈 Predict Trends</span>
-            <span class="badge badge-orange">🎯 Optimize Analytics</span>
+            <span class="badge badge-green"><i class="fas fa-chart-line"></i> Automate Insights</span>
+            <span class="badge badge-blue"><i class="fas fa-chart-bar"></i> Predict Trends</span>
+            <span class="badge badge-orange"><i class="fas fa-bullseye"></i> Optimize Analytics</span>
         </div>
     </div>
 </div>
@@ -479,7 +501,7 @@ st.markdown("""
 # Expertise Section
 st.markdown("""
 <div class="section-header">
-    <h2 class="section-title">🎯 My Expertise</h2>
+    <h2 class="section-title"><i class="fas fa-bullseye"></i> My Expertise</h2>
     <div class="section-divider"></div>
 </div>
 """, unsafe_allow_html=True)
@@ -489,7 +511,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown("""
     <div class="glass-card">
-        <h3>📊 Marketing Analytics</h3>
+        <h3><i class="fas fa-chart-pie"></i> Marketing Analytics</h3>
         <ul>
             <li>Customer Segmentation</li>
             <li>Lifetime Value (CLV)</li>
@@ -502,7 +524,7 @@ with col1:
 with col2:
     st.markdown("""
     <div class="glass-card">
-        <h3>📈 Growth Marketing</h3>
+        <h3><i class="fas fa-rocket"></i> Growth Marketing</h3>
         <ul>
             <li>Funnel Analysis</li>
             <li>A/B Testing</li>
@@ -515,7 +537,7 @@ with col2:
 with col3:
     st.markdown("""
     <div class="glass-card">
-        <h3>💡 Product Marketing</h3>
+        <h3><i class="fas fa-lightbulb"></i> Product Marketing</h3>
         <ul>
             <li>Market Research</li>
             <li>Competitive Analysis</li>
@@ -528,7 +550,7 @@ with col3:
 # Portfolio Projects Section
 st.markdown("""
 <div class="section-header">
-    <h2 class="section-title">🚀 Portfolio Projects</h2>
+    <h2 class="section-title"><i class="fas fa-briefcase"></i> Portfolio Projects</h2>
     <div class="section-divider"></div>
 </div>
 """, unsafe_allow_html=True)
@@ -538,7 +560,7 @@ col_a, col_b = st.columns(2)
 with col_a:
     st.markdown("""
     <div class="project-card">
-        <div class="project-icon">📊</div>
+        <div class="project-icon"><i class="fas fa-users-cog" style="color: #667eea;"></i></div>
         <div class="project-title">Customer Segmentation Engine</div>
         <p class="project-description">
             Using K-Means clustering to identify high-value customer segments based on RFM analysis.
@@ -551,7 +573,7 @@ with col_a:
     
     st.markdown("""
     <div class="project-card">
-        <div class="project-icon">📈</div>
+        <div class="project-icon"><i class="fas fa-chart-line" style="color: #10b981;"></i></div>
         <div class="project-title">Market Demand Forecasting</div>
         <p class="project-description">
             Predicting sales trends using Prophet & ARIMA time-series modeling for better inventory planning.
@@ -564,7 +586,7 @@ with col_a:
     
     st.markdown("""
     <div class="project-card">
-        <div class="project-icon">🎯</div>
+        <div class="project-icon"><i class="fas fa-bullseye" style="color: #f59e0b;"></i></div>
         <div class="project-title">Marketing Mix Modeling</div>
         <p class="project-description">
             Advanced MMM with adstock effects, saturation curves, and budget optimization.
@@ -576,7 +598,7 @@ with col_a:
 with col_b:
     st.markdown("""
     <div class="project-card">
-        <div class="project-icon">🤖</div>
+        <div class="project-icon"><i class="fas fa-robot" style="color: #8b5cf6;"></i></div>
         <div class="project-title">Social Media Sentiment Analysis</div>
         <p class="project-description">
             Real-time brand sentiment tracking using NLP transformers on social comments.
@@ -589,7 +611,7 @@ with col_b:
     
     st.markdown("""
     <div class="project-card">
-        <div class="project-icon">💰</div>
+        <div class="project-icon"><i class="fas fa-chart-area" style="color: #ef4444;"></i></div>
         <div class="project-title">Competitive Market Analysis</div>
         <p class="project-description">
             Economic modeling of price elasticity and market share estimation.
@@ -602,7 +624,7 @@ with col_b:
     
     st.markdown("""
     <div class="project-card">
-        <div class="project-icon">🔮</div>
+        <div class="project-icon"><i class="fas fa-crystal-ball" style="color: #06b6d4;"></i></div>
         <div class="project-title">CLV Prediction & Churn Analysis</div>
         <p class="project-description">
             Machine learning models to predict customer lifetime value and churn probability.
@@ -614,7 +636,7 @@ with col_b:
 # Call to Action
 st.markdown("""
 <div class="info-box">
-    <strong>👈 Explore Interactive Demos</strong><br>
+    <strong><i class="fas fa-arrow-left"></i> Explore Interactive Demos</strong><br>
     Select a project from the sidebar to see live demonstrations with real data analysis, 
     interactive visualizations, and downloadable insights.
 </div>
@@ -623,7 +645,7 @@ st.markdown("""
 # Resume & Contact Section
 st.markdown("""
 <div class="section-header">
-    <h2 class="section-title">📬 Get In Touch</h2>
+    <h2 class="section-title"><i class="fas fa-envelope"></i> Get In Touch</h2>
     <div class="section-divider"></div>
 </div>
 """, unsafe_allow_html=True)
@@ -631,7 +653,7 @@ st.markdown("""
 c1, c2 = st.columns(2)
 
 with c1:
-    st.markdown("### 📄 Resume")
+    st.markdown("### <i class='fas fa-file-pdf'></i> Resume", unsafe_allow_html=True)
     st.write("Download my latest curriculum vitae to learn more about my experience and skills.")
     
     import os
@@ -641,7 +663,7 @@ with c1:
         with open(resume_path, "rb") as f:
             pdf_data = f.read()
         st.download_button(
-            label="📥 Download Resume (PDF)",
+            label="⬇️ Download Resume (PDF)",
             data=pdf_data,
             file_name="Andriyanto_Resume.pdf",
             mime="application/pdf"
@@ -650,17 +672,17 @@ with c1:
         st.info("ℹ️ Resume download is currently disabled. Please contact me on LinkedIn!")
 
 with c2:
-    st.markdown("### 💌 Contact Me")
+    st.markdown("### <i class='fas fa-paper-plane'></i> Contact Me", unsafe_allow_html=True)
     st.markdown('<div class="contact-container">', unsafe_allow_html=True)
     with st.form("contact_form"):
         name = st.text_input("Name", placeholder="Your name")
         email = st.text_input("Email", placeholder="your.email@example.com")
         message = st.text_area("Message", placeholder="Tell me about your project...")
-        submit = st.form_submit_button("Send Message 🚀")
+        submit = st.form_submit_button("Send Message ✉️")
         
         if submit:
             if name and email and message:
-                st.success(f"Thanks {name}! Your message has been sent successfully. I'll get back to you soon! 🎉")
+                st.success(f"Thanks {name}! Your message has been sent successfully. I'll get back to you soon! ✅")
             else:
                 st.error("Please fill in all fields.")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -669,7 +691,7 @@ with c2:
 st.markdown("""
 <div class="custom-footer">
     <p style="margin: 0; font-weight: 600;">
-        Built with ❤️ using Streamlit by Andriyanto
+        Built with <i class="fas fa-heart" style="color: #ef4444;"></i> using Streamlit by Andriyanto
     </p>
     <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem;">
         © 2026 All Rights Reserved
