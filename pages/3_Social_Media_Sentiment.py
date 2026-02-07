@@ -11,181 +11,50 @@ import re
 import sys
 import os
 
-# NLP Libraries
-import nltk
-from nltk.sentiment import SentimentIntensityAnalyzer
-from textblob import TextBlob
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.decomposition import LatentDirichletAllocation
-
 # Add parent directory
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.data_generator import generate_sentiment_data
 
+# Import advanced NLP functions
+try:
+    from utils.advanced_nlp import (
+        analyze_sentiment_comprehensive,
+        perform_bertopic_modeling,
+        extract_aspects_advanced,
+        detect_language
+    )
+    ADVANCED_NLP_AVAILABLE = True
+except ImportError as e:
+    st.warning(f"Advanced NLP not available: {e}. Using basic models.")
+    ADVANCED_NLP_AVAILABLE = False
+
+# Fallback imports
+from nltk.sentiment import SentimentIntensityAnalyzer
+from textblob import TextBlob
+
 # Download NLTK data
+import nltk
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
 except LookupError:
     nltk.download('vader_lexicon', quiet=True)
 
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt', quiet=True)
-
 st.set_page_config(page_title="Advanced Sentiment Analysis | AI Marketing", page_icon="💬", layout="wide")
 
+# ========== HEADER ==========
 st.title("💬 Advanced Social Media Sentiment Analysis")
-st.markdown("Enterprise-grade NLP platform with **emotion detection**, **topic modeling**, and **competitive intelligence**.")
 
-# ========== HELPER FUNCTIONS ==========
-
-def analyze_sentiment_multilevel(text):
-    """Multi-level sentiment analysis"""
-    if not text or pd.isna(text):
-        return {
-            'polarity': 0,
-            'subjectivity': 0,
-            'vader_compound': 0,
-            'sentiment': 'Neutral',
-            'intensity': 'Neutral',
-            'emotion': 'Neutral'
-        }
-    
-    text = str(text)
-    
-    # TextBlob analysis
-    blob = TextBlob(text)
-    polarity = blob.sentiment.polarity
-    subjectivity = blob.sentiment.subjectivity
-    
-    # VADER analysis
-    sia = SentimentIntensityAnalyzer()
-    vader_scores = sia.polarity_scores(text)
-    compound = vader_scores['compound']
-    
-    # Sentiment classification
-    if compound >= 0.05:
-        sentiment = 'Positive'
-    elif compound <= -0.05:
-        sentiment = 'Negative'
-    else:
-        sentiment = 'Neutral'
-    
-    # Intensity classification
-    if compound >= 0.5:
-        intensity = 'Very Positive'
-    elif compound >= 0.05:
-        intensity = 'Positive'
-    elif compound <= -0.5:
-        intensity = 'Very Negative'
-    elif compound <= -0.05:
-        intensity = 'Negative'
-    else:
-        intensity = 'Neutral'
-    
-    # Simple emotion detection (keyword-based)
-    emotion = detect_emotion(text)
-    
-    return {
-        'polarity': polarity,
-        'subjectivity': subjectivity,
-        'vader_compound': compound,
-        'sentiment': sentiment,
-        'intensity': intensity,
-        'emotion': emotion
-    }
-
-def detect_emotion(text):
-    """Detect primary emotion from text"""
-    text_lower = text.lower()
-    
-    # Emotion keywords
-    emotions = {
-        'Joy': ['happy', 'joy', 'love', 'excited', 'great', 'excellent', 'amazing', 'wonderful', 'fantastic', 'awesome'],
-        'Anger': ['angry', 'hate', 'furious', 'terrible', 'worst', 'horrible', 'awful', 'disgusting', 'mad'],
-        'Sadness': ['sad', 'disappointed', 'unhappy', 'depressed', 'miserable', 'sorry', 'regret'],
-        'Fear': ['afraid', 'scared', 'worried', 'anxious', 'nervous', 'concerned', 'fear'],
-        'Surprise': ['surprised', 'shocked', 'unexpected', 'wow', 'amazing', 'incredible'],
-        'Disgust': ['disgusting', 'gross', 'nasty', 'revolting', 'sick']
-    }
-    
-    emotion_scores = {}
-    for emotion, keywords in emotions.items():
-        score = sum(1 for keyword in keywords if keyword in text_lower)
-        emotion_scores[emotion] = score
-    
-    if max(emotion_scores.values()) == 0:
-        return 'Neutral'
-    
-    return max(emotion_scores, key=emotion_scores.get)
-
-def extract_aspects(text):
-    """Extract product aspects from text"""
-    text_lower = text.lower()
-    
-    aspects = {
-        'Product': ['product', 'quality', 'item', 'goods'],
-        'Price': ['price', 'cost', 'expensive', 'cheap', 'value', 'money'],
-        'Service': ['service', 'support', 'help', 'customer', 'staff'],
-        'Delivery': ['delivery', 'shipping', 'ship', 'arrived', 'package'],
-        'Packaging': ['packaging', 'box', 'wrapped', 'package']
-    }
-    
-    found_aspects = []
-    for aspect, keywords in aspects.items():
-        if any(keyword in text_lower for keyword in keywords):
-            found_aspects.append(aspect)
-    
-    return found_aspects if found_aspects else ['General']
-
-def perform_topic_modeling(texts, n_topics=5):
-    """Perform LDA topic modeling"""
-    # Vectorize
-    vectorizer = CountVectorizer(max_features=100, stop_words='english')
-    doc_term_matrix = vectorizer.fit_transform(texts)
-    
-    # LDA
-    lda = LatentDirichletAllocation(n_components=n_topics, random_state=42)
-    lda.fit(doc_term_matrix)
-    
-    # Get topics
-    feature_names = vectorizer.get_feature_names_out()
-    topics = []
-    
-    for topic_idx, topic in enumerate(lda.components_):
-        top_words_idx = topic.argsort()[-5:][::-1]
-        top_words = [feature_names[i] for i in top_words_idx]
-        topics.append({
-            'topic_id': topic_idx,
-            'keywords': ', '.join(top_words)
-        })
-    
-    return topics, lda, vectorizer
-
-def extract_keywords_tfidf(texts, n_keywords=10):
-    """Extract keywords using TF-IDF"""
-    tfidf = TfidfVectorizer(max_features=n_keywords, stop_words='english')
-    tfidf_matrix = tfidf.fit_transform(texts)
-    
-    feature_names = tfidf.get_feature_names_out()
-    scores = tfidf_matrix.sum(axis=0).A1
-    
-    keyword_scores = list(zip(feature_names, scores))
-    keyword_scores.sort(key=lambda x: x[1], reverse=True)
-    
-    return keyword_scores
-
-def extract_hashtags(text):
-    """Extract hashtags from text"""
-    return re.findall(r'#\w+', text)
-
-def calculate_engagement_rate(df):
-    """Calculate engagement metrics"""
-    if 'Likes' in df.columns and 'Comments' in df.columns:
-        df['Engagement'] = df['Likes'] + df['Comments']
-        return df['Engagement'].mean()
-    return 0
+if ADVANCED_NLP_AVAILABLE:
+    st.markdown("""
+    <div style='background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;'>
+        <h3 style='color: white; margin: 0;'>🚀 Enterprise-Grade AI Platform</h3>
+        <p style='color: white; margin: 0.5rem 0 0 0;'>
+            Powered by <b>Deep Learning</b> • 28 Emotions • Sarcasm Detection • BERTopic • Multi-Language
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("Enterprise-grade NLP platform with **emotion detection**, **topic modeling**, and **competitive intelligence**.")
 
 # ========== SIDEBAR ==========
 st.sidebar.header("⚙️ Configuration")
@@ -201,8 +70,10 @@ if data_source == "Custom Input":
 st.sidebar.divider()
 
 st.sidebar.subheader("Analysis Settings")
-n_topics = st.sidebar.slider("Number of Topics (LDA)", 2, 10, 5)
-show_advanced = st.sidebar.checkbox("Show Advanced Analytics", value=True)
+n_topics = st.sidebar.slider("Number of Topics", 2, 10, 5)
+use_advanced_models = st.sidebar.checkbox("Use Deep Learning Models", value=ADVANCED_NLP_AVAILABLE)
+show_sarcasm = st.sidebar.checkbox("Detect Sarcasm", value=True)
+show_language = st.sidebar.checkbox("Detect Language", value=True)
 
 # ========== DATA LOADING ==========
 if data_source == "Demo Data":
@@ -216,20 +87,54 @@ else:
 
 if not df.empty:
     # Perform sentiment analysis
-    sentiment_results = df['Comment'].apply(analyze_sentiment_multilevel)
-    
-    df['Polarity'] = sentiment_results.apply(lambda x: x['polarity'])
-    df['Subjectivity'] = sentiment_results.apply(lambda x: x['subjectivity'])
-    df['VADER_Score'] = sentiment_results.apply(lambda x: x['vader_compound'])
-    df['Sentiment'] = sentiment_results.apply(lambda x: x['sentiment'])
-    df['Intensity'] = sentiment_results.apply(lambda x: x['intensity'])
-    df['Emotion'] = sentiment_results.apply(lambda x: x['emotion'])
-    
-    # Extract aspects
-    df['Aspects'] = df['Comment'].apply(extract_aspects)
-    
-    # Extract hashtags
-    df['Hashtags'] = df['Comment'].apply(extract_hashtags)
+    with st.spinner("🔬 Analyzing sentiment with AI models..."):
+        if use_advanced_models and ADVANCED_NLP_AVAILABLE:
+            # Use advanced comprehensive analysis
+            results = df['Comment'].apply(analyze_sentiment_comprehensive)
+            
+            df['Polarity'] = results.apply(lambda x: x['polarity'])
+            df['Subjectivity'] = results.apply(lambda x: x['subjectivity'])
+            df['VADER_Score'] = results.apply(lambda x: x['vader_compound'])
+            df['Sentiment'] = results.apply(lambda x: x['sentiment'])
+            df['Emotion'] = results.apply(lambda x: x['emotion'])
+            df['Emotion_Confidence'] = results.apply(lambda x: x['emotion_confidence'])
+            df['All_Emotions'] = results.apply(lambda x: x['all_emotions'])
+            
+            if show_sarcasm:
+                df['Is_Sarcastic'] = results.apply(lambda x: x['is_sarcastic'])
+                df['Sarcasm_Confidence'] = results.apply(lambda x: x['sarcasm_confidence'])
+            
+            if show_language:
+                df['Language'] = results.apply(lambda x: x['language'])
+            
+            df['Aspects'] = results.apply(lambda x: x['aspects'])
+            
+        else:
+            # Fallback to basic analysis
+            from textblob import TextBlob
+            
+            def basic_analysis(text):
+                blob = TextBlob(str(text))
+                sia = SentimentIntensityAnalyzer()
+                vader = sia.polarity_scores(str(text))
+                
+                compound = vader['compound']
+                sentiment = 'Positive' if compound >= 0.05 else ('Negative' if compound <= -0.05 else 'Neutral')
+                
+                return {
+                    'polarity': blob.sentiment.polarity,
+                    'subjectivity': blob.sentiment.subjectivity,
+                    'vader_compound': compound,
+                    'sentiment': sentiment
+                }
+            
+            results = df['Comment'].apply(basic_analysis)
+            df['Polarity'] = results.apply(lambda x: x['polarity'])
+            df['Subjectivity'] = results.apply(lambda x: x['subjectivity'])
+            df['VADER_Score'] = results.apply(lambda x: x['vader_compound'])
+            df['Sentiment'] = results.apply(lambda x: x['sentiment'])
+            df['Emotion'] = 'Neutral'
+            df['Aspects'] = [['General']] * len(df)
     
     # ========== TABS ==========
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -274,21 +179,18 @@ if not df.empty:
             st.plotly_chart(fig_sentiment, use_container_width=True)
         
         with col2:
-            st.markdown("### Sentiment Intensity")
+            st.markdown("### Sentiment Score Distribution")
             
-            intensity_counts = df['Intensity'].value_counts().reindex([
-                'Very Positive', 'Positive', 'Neutral', 'Negative', 'Very Negative'
-            ], fill_value=0)
-            
-            fig_intensity = px.bar(
-                x=intensity_counts.index,
-                y=intensity_counts.values,
-                title="Sentiment Intensity Distribution",
-                labels={'x': 'Intensity', 'y': 'Count'},
-                color=intensity_counts.values,
-                color_continuous_scale='RdYlGn'
+            fig_hist = px.histogram(
+                df,
+                x='VADER_Score',
+                nbins=30,
+                title="VADER Score Distribution",
+                labels={'VADER_Score': 'Sentiment Score'},
+                color_discrete_sequence=['#3498DB']
             )
-            st.plotly_chart(fig_intensity, use_container_width=True)
+            fig_hist.add_vline(x=0, line_dash="dash", line_color="gray")
+            st.plotly_chart(fig_hist, use_container_width=True)
         
         # Polarity vs Subjectivity
         st.markdown("### Polarity vs Subjectivity Analysis")
@@ -320,101 +222,144 @@ if not df.empty:
         ax.imshow(wordcloud, interpolation='bilinear')
         ax.axis('off')
         st.pyplot(fig_wc)
+        
+        # Sarcasm Detection (if enabled)
+        if show_sarcasm and 'Is_Sarcastic' in df.columns:
+            st.divider()
+            st.markdown("### 😏 Sarcasm Detection")
+            
+            sarcastic_count = df['Is_Sarcastic'].sum()
+            sarcastic_pct = (sarcastic_count / len(df)) * 100
+            
+            col1, col2 = st.columns([1, 2])
+            
+            with col1:
+                st.metric("Sarcastic Comments", f"{sarcastic_count} ({sarcastic_pct:.1f}%)")
+                
+                if sarcastic_count > 0:
+                    st.info("💡 Sarcasm detected! Sentiment scores have been adjusted.")
+            
+            with col2:
+                if sarcastic_count > 0:
+                    sarcastic_samples = df[df['Is_Sarcastic']][['Comment', 'Sentiment', 'Sarcasm_Confidence']].head(3)
+                    st.dataframe(sarcastic_samples, use_container_width=True, hide_index=True)
     
     # ========== TAB 2: EMOTION ANALYSIS ==========
     with tab2:
-        st.subheader("😊 Emotion Detection")
+        st.subheader("😊 Deep Learning Emotion Detection")
         
-        # Emotion Distribution
-        emotion_counts = df['Emotion'].value_counts()
-        
-        col1, col2 = st.columns([1, 2])
-        
-        with col1:
-            st.markdown("### Emotion Breakdown")
+        if 'Emotion' in df.columns and df['Emotion'].notna().any():
+            # Emotion Distribution
+            emotion_counts = df['Emotion'].value_counts()
             
-            # Emotion metrics
-            for emotion in ['Joy', 'Anger', 'Sadness', 'Fear', 'Surprise', 'Disgust', 'Neutral']:
-                count = emotion_counts.get(emotion, 0)
-                pct = (count / len(df)) * 100 if len(df) > 0 else 0
-                
-                emoji_map = {
-                    'Joy': '😊',
-                    'Anger': '😠',
-                    'Sadness': '😢',
-                    'Fear': '😨',
-                    'Surprise': '😲',
-                    'Disgust': '🤢',
-                    'Neutral': '😐'
-                }
-                
-                st.metric(f"{emoji_map.get(emotion, '')} {emotion}", f"{count} ({pct:.1f}%)")
-        
-        with col2:
-            st.markdown("### Emotion Distribution")
+            col1, col2 = st.columns([1, 2])
             
-            fig_emotion = px.bar(
-                x=emotion_counts.index,
-                y=emotion_counts.values,
-                title="Emotions Detected in Comments",
-                labels={'x': 'Emotion', 'y': 'Count'},
-                color=emotion_counts.index,
-                color_discrete_sequence=px.colors.qualitative.Set3
-            )
-            st.plotly_chart(fig_emotion, use_container_width=True)
-        
-        # Emotion-Sentiment Correlation
-        st.markdown("### Emotion vs Sentiment")
-        
-        emotion_sentiment = df.groupby(['Emotion', 'Sentiment']).size().reset_index(name='Count')
-        
-        fig_emotion_sent = px.bar(
-            emotion_sentiment,
-            x='Emotion',
-            y='Count',
-            color='Sentiment',
-            title="Emotion-Sentiment Correlation",
-            color_discrete_map={'Positive': '#2ECC71', 'Negative': '#E74C3C', 'Neutral': '#95A5A6'},
-            barmode='stack'
-        )
-        st.plotly_chart(fig_emotion_sent, use_container_width=True)
-        
-        # Sample comments by emotion
-        st.markdown("### Sample Comments by Emotion")
-        
-        selected_emotion = st.selectbox("Select Emotion", emotion_counts.index.tolist())
-        
-        emotion_samples = df[df['Emotion'] == selected_emotion][['Comment', 'Sentiment', 'VADER_Score']].head(5)
-        st.dataframe(emotion_samples, use_container_width=True, hide_index=True)
+            with col1:
+                st.markdown("### Emotion Breakdown")
+                
+                # Emotion metrics
+                for emotion in emotion_counts.index[:7]:
+                    count = emotion_counts.get(emotion, 0)
+                    pct = (count / len(df)) * 100 if len(df) > 0 else 0
+                    
+                    emoji_map = {
+                        'joy': '😊', 'anger': '😠', 'sadness': '😢',
+                        'fear': '😨', 'surprise': '😲', 'disgust': '🤢',
+                        'neutral': '😐', 'love': '❤️', 'optimism': '🌟'
+                    }
+                    
+                    emoji = emoji_map.get(emotion.lower(), '💭')
+                    st.metric(f"{emoji} {emotion.title()}", f"{count} ({pct:.1f}%)")
+            
+            with col2:
+                st.markdown("### Emotion Distribution")
+                
+                fig_emotion = px.bar(
+                    x=emotion_counts.index,
+                    y=emotion_counts.values,
+                    title="Emotions Detected in Comments",
+                    labels={'x': 'Emotion', 'y': 'Count'},
+                    color=emotion_counts.index,
+                    color_discrete_sequence=px.colors.qualitative.Set3
+                )
+                st.plotly_chart(fig_emotion, use_container_width=True)
+            
+            # Emotion Confidence
+            if 'Emotion_Confidence' in df.columns:
+                st.markdown("### Emotion Detection Confidence")
+                
+                fig_conf = px.box(
+                    df,
+                    x='Emotion',
+                    y='Emotion_Confidence',
+                    title="Confidence Scores by Emotion",
+                    labels={'Emotion_Confidence': 'Confidence'},
+                    color='Emotion',
+                    color_discrete_sequence=px.colors.qualitative.Set3
+                )
+                st.plotly_chart(fig_conf, use_container_width=True)
+                
+                avg_confidence = df['Emotion_Confidence'].mean()
+                st.info(f"📊 Average emotion detection confidence: **{avg_confidence:.1%}**")
+            
+            # Sample comments by emotion
+            st.markdown("### Sample Comments by Emotion")
+            
+            selected_emotion = st.selectbox("Select Emotion", emotion_counts.index.tolist())
+            
+            emotion_samples = df[df['Emotion'] == selected_emotion][['Comment', 'Sentiment', 'VADER_Score']].head(5)
+            st.dataframe(emotion_samples, use_container_width=True, hide_index=True)
+        else:
+            st.warning("Emotion detection not available. Enable deep learning models in sidebar.")
     
     # ========== TAB 3: TOPICS & ASPECTS ==========
     with tab3:
         st.subheader("🎯 Topic Modeling & Aspect Analysis")
         
         # Topic Modeling
-        st.markdown("### LDA Topic Modeling")
+        st.markdown("### Semantic Topic Modeling")
         
         if len(df) >= n_topics:
-            topics, lda_model, vectorizer = perform_topic_modeling(df['Comment'].tolist(), n_topics=n_topics)
-            
-            topics_df = pd.DataFrame(topics)
-            st.dataframe(topics_df, use_container_width=True, hide_index=True)
-            
-            # Topic word clouds
-            st.markdown("### Topic Word Clouds")
-            
-            cols = st.columns(min(3, n_topics))
-            
-            for i, topic in enumerate(topics[:3]):
-                with cols[i]:
-                    keywords = topic['keywords']
-                    wc = WordCloud(width=300, height=200, background_color='white').generate(keywords)
-                    
-                    fig_topic, ax = plt.subplots(figsize=(4, 3))
-                    ax.imshow(wc, interpolation='bilinear')
-                    ax.axis('off')
-                    ax.set_title(f"Topic {i+1}")
-                    st.pyplot(fig_topic)
+            with st.spinner("🔬 Extracting topics with BERTopic..."):
+                try:
+                    if use_advanced_models and ADVANCED_NLP_AVAILABLE:
+                        topics_df, topic_model, topic_assignments = perform_bertopic_modeling(
+                            df['Comment'].tolist(),
+                            n_topics=n_topics
+                        )
+                        
+                        st.dataframe(topics_df, use_container_width=True, hide_index=True)
+                        
+                        st.success("✅ Using BERTopic (semantic topic modeling)")
+                    else:
+                        # Fallback to LDA
+                        from sklearn.feature_extraction.text import CountVectorizer
+                        from sklearn.decomposition import LatentDirichletAllocation
+                        
+                        vectorizer = CountVectorizer(max_features=100, stop_words='english')
+                        doc_term_matrix = vectorizer.fit_transform(df['Comment'])
+                        
+                        lda = LatentDirichletAllocation(n_components=n_topics, random_state=42)
+                        lda.fit(doc_term_matrix)
+                        
+                        feature_names = vectorizer.get_feature_names_out()
+                        topics = []
+                        
+                        for topic_idx, topic in enumerate(lda.components_):
+                            top_words_idx = topic.argsort()[-5:][::-1]
+                            top_words = [feature_names[i] for i in top_words_idx]
+                            topics.append({
+                                'topic_id': topic_idx,
+                                'keywords': ', '.join(top_words)
+                            })
+                        
+                        topics_df = pd.DataFrame(topics)
+                        st.dataframe(topics_df, use_container_width=True, hide_index=True)
+                        
+                        st.info("ℹ️ Using LDA (basic topic modeling). Enable deep learning for better results.")
+                        
+                except Exception as e:
+                    st.error(f"Topic modeling failed: {e}")
         else:
             st.warning(f"Need at least {n_topics} comments for topic modeling. Current: {len(df)}")
         
@@ -426,7 +371,10 @@ if not df.empty:
         # Flatten aspects
         all_aspects = []
         for aspects_list in df['Aspects']:
-            all_aspects.extend(aspects_list)
+            if isinstance(aspects_list, list):
+                all_aspects.extend(aspects_list)
+            else:
+                all_aspects.append(str(aspects_list))
         
         aspect_counts = Counter(all_aspects)
         
@@ -455,7 +403,7 @@ if not df.empty:
             aspect_sentiment = []
             
             for aspect in aspect_counts.keys():
-                aspect_comments = df[df['Aspects'].apply(lambda x: aspect in x)]
+                aspect_comments = df[df['Aspects'].apply(lambda x: aspect in x if isinstance(x, list) else aspect == str(x))]
                 if len(aspect_comments) > 0:
                     avg_sentiment = aspect_comments['VADER_Score'].mean()
                     aspect_sentiment.append({
@@ -477,24 +425,6 @@ if not df.empty:
                     color_continuous_midpoint=0
                 )
                 st.plotly_chart(fig_aspect_sent, use_container_width=True)
-        
-        # Keyword Extraction
-        st.markdown("### Top Keywords (TF-IDF)")
-        
-        keywords = extract_keywords_tfidf(df['Comment'].tolist(), n_keywords=15)
-        
-        keywords_df = pd.DataFrame(keywords, columns=['Keyword', 'Score'])
-        
-        fig_keywords = px.bar(
-            keywords_df,
-            x='Score',
-            y='Keyword',
-            orientation='h',
-            title="Top 15 Keywords by TF-IDF",
-            color='Score',
-            color_continuous_scale='Viridis'
-        )
-        st.plotly_chart(fig_keywords, use_container_width=True)
     
     # ========== TAB 4: TRENDS ==========
     with tab4:
@@ -542,53 +472,40 @@ if not df.empty:
         
         st.plotly_chart(fig_trend, use_container_width=True)
         
-        # Volume trends
-        st.markdown("### Comment Volume Trends")
-        
-        df_sorted['Hour'] = df_sorted['Date'].dt.hour
-        hourly_volume = df_sorted.groupby('Hour').size().reset_index(name='Count')
-        
-        fig_volume = px.bar(
-            hourly_volume,
-            x='Hour',
-            y='Count',
-            title="Comments by Hour of Day",
-            labels={'Hour': 'Hour', 'Count': 'Number of Comments'},
-            color='Count',
-            color_continuous_scale='Blues'
-        )
-        st.plotly_chart(fig_volume, use_container_width=True)
-        
-        # Hashtag trends
-        st.markdown("### Hashtag Analysis")
-        
-        all_hashtags = []
-        for hashtags in df['Hashtags']:
-            all_hashtags.extend(hashtags)
-        
-        if all_hashtags:
-            hashtag_counts = Counter(all_hashtags).most_common(10)
+        # Language Distribution (if available)
+        if show_language and 'Language' in df.columns:
+            st.markdown("### 🌍 Language Distribution")
             
-            hashtag_df = pd.DataFrame(hashtag_counts, columns=['Hashtag', 'Count'])
+            lang_counts = df['Language'].value_counts()
             
-            fig_hashtags = px.bar(
-                hashtag_df,
-                x='Count',
-                y='Hashtag',
-                orientation='h',
-                title="Top 10 Hashtags",
-                color='Count',
-                color_continuous_scale='Greens'
+            lang_names = {
+                'en': 'English',
+                'id': 'Indonesian',
+                'es': 'Spanish',
+                'fr': 'French',
+                'de': 'German',
+                'zh-cn': 'Chinese'
+            }
+            
+            lang_display = pd.DataFrame({
+                'Language': [lang_names.get(lang, lang.upper()) for lang in lang_counts.index],
+                'Count': lang_counts.values
+            })
+            
+            fig_lang = px.pie(
+                lang_display,
+                values='Count',
+                names='Language',
+                title="Comments by Language",
+                hole=0.4
             )
-            st.plotly_chart(fig_hashtags, use_container_width=True)
-        else:
-            st.info("No hashtags found in comments")
+            st.plotly_chart(fig_lang, use_container_width=True)
     
     # ========== TAB 5: COMPETITIVE ==========
     with tab5:
         st.subheader("🏆 Competitive Sentiment Comparison")
         
-        st.info("💡 **Demo Mode:** In production, this would compare sentiment across multiple brands/competitors.")
+        st.info("💡 **Demo Mode:** In production, this would compare sentiment across multiple brands/competitors using real-time social media data.")
         
         # Simulated competitive data
         brands = ['Your Brand', 'Competitor A', 'Competitor B', 'Competitor C']
@@ -646,18 +563,8 @@ if not df.empty:
             color_continuous_midpoint=0
         )
         st.plotly_chart(fig_nss, use_container_width=True)
-        
-        # Competitive table
-        st.dataframe(competitive_data.style.format({
-            'Positive %': '{:.0f}%',
-            'Negative %': '{:.0f}%',
-            'Neutral %': '{:.0f}%',
-            'Avg Sentiment': '{:.2f}',
-            'Volume': '{:,.0f}',
-            'NSS': '{:+.0f}%'
-        }).background_gradient(subset=['NSS'], cmap='RdYlGn'), use_container_width=True, hide_index=True)
     
-    # ========== TAB 6: INSIGHTS & ALERTS ==========
+    # ========== TAB 6: INSIGHTS ==========
     with tab6:
         st.subheader("🚨 Actionable Insights & Alerts")
         
@@ -706,43 +613,6 @@ if not df.empty:
         
         st.divider()
         
-        # Opportunity Detection
-        st.markdown("### Opportunity Detection")
-        
-        if positive_pct > 60:
-            st.success(f"""
-            🎯 **OPPORTUNITY: High Positive Sentiment**
-            
-            - Positive comments: {positive_pct:.1f}%
-            
-            **Recommended Actions:**
-            1. 📣 Amplify positive testimonials
-            2. 🎁 Launch referral program
-            3. 📸 Collect user-generated content
-            4. 🌟 Feature customer success stories
-            """)
-        
-        # Top Issues
-        st.markdown("### Top Issues to Address")
-        
-        negative_comments = df[df['Sentiment'] == 'Negative']
-        
-        if len(negative_comments) > 0:
-            # Extract aspects from negative comments
-            negative_aspects = []
-            for aspects in negative_comments['Aspects']:
-                negative_aspects.extend(aspects)
-            
-            issue_counts = Counter(negative_aspects).most_common(5)
-            
-            st.markdown("**Most Complained Aspects:**")
-            for aspect, count in issue_counts:
-                st.markdown(f"- **{aspect}**: {count} mentions")
-        else:
-            st.info("No negative comments to analyze")
-        
-        st.divider()
-        
         # Response Priority
         st.markdown("### Response Priority Queue")
         
@@ -751,7 +621,11 @@ if not df.empty:
         df_priority['Priority_Score'] = (1 - df_priority['VADER_Score']) * 100
         df_priority = df_priority.sort_values('Priority_Score', ascending=False)
         
-        priority_comments = df_priority[['Comment', 'Sentiment', 'VADER_Score', 'Emotion', 'Priority_Score']].head(5)
+        priority_cols = ['Comment', 'Sentiment', 'VADER_Score', 'Priority_Score']
+        if 'Emotion' in df_priority.columns:
+            priority_cols.insert(3, 'Emotion')
+        
+        priority_comments = df_priority[priority_cols].head(5)
         
         st.dataframe(priority_comments.style.format({
             'VADER_Score': '{:.2f}',
@@ -765,4 +639,10 @@ else:
 
 # ========== FOOTER ==========
 st.divider()
+
+if ADVANCED_NLP_AVAILABLE:
+    st.success("✅ **Advanced AI Models Active** - Using deep learning for superior accuracy")
+else:
+    st.warning("⚠️ **Basic Models Active** - Install transformers, bertopic, and spacy for advanced features")
+
 st.caption("💡 **Pro Tip:** Use this advanced NLP platform to gain deep insights into customer sentiment, emotions, and trending topics!")

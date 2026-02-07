@@ -40,4 +40,12 @@ statsmodels>=0.14.0
 nltk>=3.8.0
 textblob>=0.17.0
 
-# Last updated: 2026-01-27
+# Deep Learning NLP (Phase 1 - Advanced Sentiment)
+transformers>=4.35.0
+torch>=2.1.0
+sentence-transformers>=2.2.2
+bertopic>=0.15.0
+spacy>=3.7.0
+langdetect>=1.0.9
+
+# Last updated: 2026-02-07
